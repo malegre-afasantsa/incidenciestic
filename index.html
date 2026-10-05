@@ -612,26 +612,26 @@ async function pdfRooms(rooms){
   if(!window.jspdf){toast('No se pudo cargar el generador PDF');return}
   if(typeof window.qrcode!=='function'){toast('No se pudo cargar el generador QR');return}
   if(!LOGO.startsWith('data:image/')){toast('Carga primero el logo de la escuela desde Opciones TIC');return}
-  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=90,H=50,per=10;
-  const qr=window.qrcode(0,'M');qr.addData('https://ticsantsa.vercel.app');qr.make();
-  const qrImg=new Image();qrImg.src=qr.createDataURL(5,1);
-  try{await qrImg.decode()}catch(e){toast('No se pudo generar la imagen QR');return}
-  const canvas=document.createElement('canvas');canvas.width=320;canvas.height=320;
-  canvas.getContext('2d').drawImage(qrImg,0,0,320,320);
-  const qrData=canvas.toDataURL('image/png');
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=88,H=128,per=4;
+  const qr=qrPng('https://ticsantsa.vercel.app');
   rooms.slice().sort((a,b)=>a.name.localeCompare(b.name,'ca')).forEach((room,i)=>{
     if(i&&i%per===0)doc.addPage();
-    const k=i%per,x=10+(k%2)*95,y=10+Math.floor(k/2)*55;
-    doc.setDrawColor(150);doc.roundedRect(x,y,W,H,2,2);
-    addContainedImage(doc,LOGO,x+4,y+3,25,10);
-    doc.addImage(qrData,'PNG',x+63,y+10,22,22);
-    doc.setTextColor(25,45,70);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('Reporta incidències tècniques',x+4,y+20);
-    doc.setFont('helvetica','normal');doc.setFontSize(7);
-    doc.text("Identificador d'aula:",x+4,y+31);
-    doc.setFont('helvetica','bold');doc.setFontSize(14);
-    const name=doc.splitTextToSize(room.name,56);
-    doc.text(name.slice(0,2),x+4,y+40);
+    const k=i%per,x=12+(k%2)*98,y=12+Math.floor(k/2)*138;
+    doc.setFillColor(255,255,255);doc.setDrawColor(207,218,229);doc.setLineWidth(.55);doc.roundedRect(x,y,W,H,3,3,'FD');
+    doc.setFillColor(29,95,168);doc.roundedRect(x,y,3,H,1,1,'F');
+    doc.setFillColor(239,245,250);doc.roundedRect(x+6,y+6,W-12,23,2,2,'F');
+    addContainedImage(doc,LOGO,x+10,y+8,W-20,19);
+    doc.setDrawColor(220,228,236);doc.setLineWidth(.3);doc.line(x+7,y+34,x+W-7,y+34);
+    doc.setTextColor(81,101,122);doc.setFont('helvetica','bold');doc.setFontSize(7);
+    doc.text('ESCOLA SANT SALVADOR  ·  PORTAL TIC',x+7,y+40);
+    doc.setTextColor(25,45,70);doc.setFontSize(8);doc.text("IDENTIFICADOR D'AULA",x+7,y+50);
+    doc.setTextColor(20,72,120);doc.setFontSize(16);
+    const name=doc.splitTextToSize(room.name,74).slice(0,2);
+    doc.text(name,x+7,y+60);
+    doc.setFillColor(246,248,251);doc.roundedRect(x+20,y+69,48,48,2,2,'F');
+    doc.addImage(qr,'PNG',x+24,y+73,40,40);
+    doc.setTextColor(29,95,168);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text('ESCANEA PARA REPORTAR',x+W/2,y+124,{align:'center'});
   });
   try{doc.save('etiquetes-aules-sant-salvador.pdf')}catch(e){toast('No se pudo descargar el PDF')}
 }
@@ -639,31 +639,34 @@ async function pdf(codes){
   if(!codes.length)return;
   if(!window.jspdf){toast('No s\u2019ha pogut carregar el generador de PDF');return}
   if(typeof window.qrcode!=='function'){toast('No se pudo cargar el generador QR');return}
-  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=88,H=128,per=4;
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=90,H=50,per=10;
   const ord=['cart','fix','loose'];codes=codes.filter(code=>devOf(code)).slice().sort((p,q)=>{const a=devOf(p),b=devOf(q);return ord.indexOf(modeOf(a))-ord.indexOf(modeOf(b))||(cartOf(a.cartId)?.name||a.loc||'~').localeCompare(cartOf(b.cartId)?.name||b.loc||'~')||(a.num||0)-(b.num||0)||a.code.localeCompare(b.code)});
   if(!codes.length)return;
   const logo=LOGO.startsWith('data:image/')?LOGO:'';
   codes.forEach((code,i)=>{
     if(i&&i%per===0)doc.addPage();
-    const k=i%per,x=12+(k%2)*98,y=12+Math.floor(k/2)*138,d=devOf(code);
+    const k=i%per,x=10+(k%2)*95,y=10+Math.floor(k/2)*55,d=devOf(code);
     const qr=qrPng(`https://ticsantsa.vercel.app/?device=${encodeURIComponent(d.code)}`);
-    doc.setFillColor(255,255,255);doc.setDrawColor(207,218,229);doc.setLineWidth(.55);doc.roundedRect(x,y,W,H,3,3,'FD');
-    doc.setFillColor(29,95,168);doc.roundedRect(x,y,3,H,1,1,'F');
-    doc.setFillColor(239,245,250);doc.roundedRect(x+6,y+6,W-12,23,2,2,'F');
-    if(logo)addContainedImage(doc,logo,x+10,y+8,W-20,19);
-    else{doc.setTextColor(20,72,120);doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text('ESCOLA SANT SALVADOR',x+W/2,y+20,{align:'center'})}
-    doc.setDrawColor(220,228,236);doc.setLineWidth(.3);doc.line(x+7,y+34,x+W-7,y+34);
-    doc.setTextColor(81,101,122);doc.setFont('helvetica','bold');doc.setFontSize(7);
-    doc.text('ESCOLA SANT SALVADOR  ·  INVENTARI TIC',x+7,y+40);
-    doc.setTextColor(25,45,70);doc.setFontSize(8);doc.text("IDENTIFICADOR D'INVENTARI",x+7,y+50);
-    doc.setTextColor(20,72,120);doc.setFontSize(d.code.length>12?15:19);doc.text(d.code,x+7,y+60);
-    doc.setFillColor(246,248,251);doc.roundedRect(x+20,y+63,48,48,2,2,'F');
-    doc.addImage(qr,'PNG',x+23,y+66,42,42);
-    doc.setTextColor(29,95,168);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('ESCANEA PARA REPORTAR',x+W/2,y+116,{align:'center'});
-    doc.setTextColor(81,101,122);doc.setFont('helvetica','normal');doc.setFontSize(7);
-    const place=doc.splitTextToSize(devicePlaceLabel(d),W-14).slice(0,1);
-    doc.text(place[0].slice(0,48),x+7,y+123);
+    doc.setFillColor(255,255,255);doc.setDrawColor(207,218,229);doc.setLineWidth(.55);doc.roundedRect(x,y,W,H,2,2,'FD');
+    doc.setFillColor(29,95,168);doc.roundedRect(x,y,2.5,H,1,1,'F');
+    doc.setFillColor(239,245,250);doc.roundedRect(x+5,y+3,W-10,14,2,2,'F');
+    if(logo)addContainedImage(doc,logo,x+8,y+4,18,10);
+    else{doc.setTextColor(20,72,120);doc.setFont('helvetica','bold');doc.setFontSize(6);doc.text('ESCOLA SANT SALVADOR',x+7,y+11)}
+    doc.setTextColor(20,72,120);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text('INVENTARI TIC',x+30,y+9);
+    doc.setTextColor(81,101,122);doc.setFontSize(5.5);
+    doc.text('ESCOLA SANT SALVADOR',x+30,y+14);
+    doc.setTextColor(81,101,122);doc.setFontSize(6);doc.text("CODI D'INVENTARI",x+5,y+23);
+    doc.setTextColor(25,45,70);doc.setFontSize(16);
+    const codeWidth=doc.getTextWidth(d.code);
+    doc.setFontSize(Math.min(16,Math.max(8,16*52/codeWidth)));
+    doc.text(d.code,x+5,y+33);
+    doc.setFont('helvetica','normal');doc.setFontSize(6);
+    const place=doc.splitTextToSize(devicePlaceLabel(d),54).slice(0,1);
+    doc.text(place[0],x+5,y+42);
+    doc.addImage(qr,'PNG',x+64,y+16,22,22);
+    doc.setTextColor(29,95,168);doc.setFont('helvetica','bold');doc.setFontSize(5.5);
+    doc.text('ESCANEA',x+75,y+43,{align:'center'});
   });
   const blob=doc.output('blob'),name='etiquetes-sant-salvador.pdf';
   try{doc.save(name)}catch(e){toast('No se pudo descargar el PDF')}
