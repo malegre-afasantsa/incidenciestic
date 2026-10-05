@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Incidències TIC · Escola Sant Salvador</title>
+<link rel="icon" id="favicon" type="image/jpeg" href="https://agora.xtec.cat/ceipsantsalvador-tarragona/wp-content/uploads/usu671/2025/02/OIP-200x150.jpeg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -198,7 +199,7 @@ function themeFromImg(im){const c=document.createElement('canvas');c.width=48;c.
 function applyTheme(t){const r=document.documentElement.style;if(!t||typeof t.h1!=='number'){['--acc','--acc-d','--acc2','--acc3'].forEach(k=>r.removeProperty(k));return}
   r.setProperty('--acc',`hsl(${t.h1} 62% 36%)`);r.setProperty('--acc-d',`hsl(${t.h1} 66% 25%)`);r.setProperty('--acc2',`hsl(${t.h1} 60% 95%)`);r.setProperty('--acc3',`hsl(${t.h2==null?(t.h1+35)%360:t.h2} 85% 52%)`)}
 try{applyTheme(JSON.parse(localStorage.getItem('ss-theme')||'null'))}catch(e){}
-function applyLogo(){const i=document.getElementById('logoImg');if(!i)return;i.onerror=()=>{i.style.display='none'};const u=LOGO||LOGO_URL;i.style.display='';i.src=u}
+function applyLogo(){const u=LOGO||LOGO_URL,icon=document.getElementById('favicon');if(icon){icon.href=u;icon.type=u.startsWith('data:image/png')?'image/png':'image/jpeg'}const i=document.getElementById('logoImg');if(!i)return;i.onerror=()=>{i.style.display='none'};i.style.display='';i.src=u}
 function setLogoFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,320/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);LOGO=c.toDataURL('image/jpeg',.9);cfg.logo=LOGO;const th=themeFromImg(c);cfg.theme=th;applyTheme(th);try{localStorage.setItem('ss-theme',JSON.stringify(th))}catch(err){}try{localStorage.setItem('ss-logo',LOGO)}catch(err){}applyLogo();save();toast('Logo actualizado')};im.src=r.result};r.readAsDataURL(f)}
 const TYPES=['Ordinador','Chromebook','Tauleta'];
 const ST={oberta:'Oberta',curs:'En curs',resolta:'Resolta'};
@@ -338,6 +339,25 @@ const place=d=>{if(!d)return'Dispositiu eliminat';if(d.rs==='fet')return'Desacti
 const locOf=d=>{const c=cartOf(d.cartId);return(c?c.loc:d.loc)||''};
 const openCount=code=>S.incidents.filter(i=>i.code===code&&i.st!=='resolta').length;
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+let soundEnabled=true,uiSynth=null;
+try{soundEnabled=localStorage.getItem('ss-ui-sound')!=='off'}catch(e){}
+function setSoundEnabled(value){
+  soundEnabled=value;try{localStorage.setItem('ss-ui-sound',value?'on':'off')}catch(e){}
+  const button=$('#soundToggle');if(button){button.setAttribute('aria-pressed',String(value));button.setAttribute('aria-label',value?'Desactivar sonidos':'Activar sonidos');button.title=value?'Desactivar sonidos':'Activar sonidos';button.textContent=value?'♫':'♪'}
+}
+function playUiSound(kind='click'){
+  if(!soundEnabled||!window.Tone)return;
+  const patterns={
+    click:[['C6','64n',0]],scan:[['E6','32n',0],['A6','16n',.055]],
+    save:[['D6','32n',0],['G6','32n',.055]],incident:[['G5','16n',0],['C6','8n',.07]],
+    resolve:[['C6','32n',0],['E6','32n',.06],['G6','8n',.12]],
+    change:[['D5','32n',0],['F5','32n',.055]],error:[['A3','16n',0],['F3','16n',.09]]
+  };
+  try{
+    if(!uiSynth)uiSynth=new window.Tone.Synth({oscillator:{type:'square'},envelope:{attack:.002,decay:.055,sustain:0,release:.035},volume:-20}).toDestination();
+    window.Tone.start().then(()=>{if(!soundEnabled)return;const now=window.Tone.now()+.01;(patterns[kind]||patterns.click).forEach(([note,duration,offset])=>uiSynth.triggerAttackRelease(note,duration,now+offset,.18))}).catch(()=>{});
+  }catch(e){}
+}
 function opts(arr,sel){return arr.map(([v,l])=>`<option value="${h(v)}"${v===sel?' selected':''}>${h(l)}</option>`).join('')}
 function dtext(d){if(!d)return'';const c=cartOf(d.cartId);
   return[d.code,d.type,d.num,c?'núm '+d.num:'',c&&c.name,c&&c.loc,c&&c.note,d.notes,d.loc,d.spot,''].join(' ').toLowerCase()}
@@ -349,12 +369,13 @@ const addLog=(i,text,w,sys=true)=>{(i.cm=i.cm||[]).push({id:uid(),who:w||'TIC',t
 function form(title,body,onSave,okLabel='Desa'){
   const fr=$('#frm');
   fr.innerHTML=`<h2>${h(title)}</h2>${body}<p class="err" id="err"></p><div class="fb"><button type="button" class="btn" id="cx">Cancel·la</button><button class="btn p">${okLabel}</button></div>`;
+  fr.scrollTop=0;$('#dlg').scrollTop=0;
   $('#cx').onclick=()=>$('#dlg').close();
   fr.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(fr));const er=await onSave(d);
-    if(er){$('#err').textContent=er;return}
-    save();$('#dlg').close();render()};
+    if(er){$('#err').textContent=er;playUiSound('error');return}
+    save();playUiSound('save');$('#dlg').close();render()};
   $('#dlg').showModal();
-  const first=fr.querySelector('input,select,textarea');if(first)first.focus();
+  const first=fr.querySelector('input,select,textarea');if(first&&!matchMedia('(max-width:700px)').matches)first.focus({preventScroll:true});
 }
 
 /* ---------- Incidències ---------- */
@@ -700,6 +721,8 @@ $('#modeBtn').onclick=()=>{
 };
 $('#newInc').onclick=()=>wiz();
 $('#scanBtn').onclick=openDeviceScanner;
+$('#soundToggle').onclick=()=>{if(soundEnabled)setSoundEnabled(false);else{setSoundEnabled(true);playUiSound('click')}};
+setSoundEnabled(soundEnabled);
 $('#dlg').addEventListener('close',()=>{if(deviceScanner)closeDeviceScanner(false)});
 $('#gq').oninput=e=>{f.q=e.target.value.trim();render()};
 function helpHtml(){
@@ -860,7 +883,7 @@ function wiz(pre={}){
   const Ls=()=>Q(a).filter(q=>!(q.key in pre));
   const bar=(n,t)=>`<div class="prog"><i style="width:${Math.round(n/t*100)}%"></i></div>`;
   const foot=(back,next)=>`<p class="err" id="err"></p><div class="fb">${back?'<button type="button" class="btn" id="wb">← Enrere</button>':''}<button type="button" class="btn" id="cx">Cancel·la</button>${next?`<button class="btn p">${next}</button>`:''}</div>`;
-  const wire=()=>{$('#cx').onclick=()=>$('#dlg').close();const b=$('#wb');if(b)b.onclick=()=>{st.i=Math.max(0,st.i-1);draw()};const f=fr.querySelector('input,select,textarea');if(f)f.focus()};
+  const wire=()=>{$('#cx').onclick=()=>$('#dlg').close();const b=$('#wb');if(b)b.onclick=()=>{playUiSound('click');st.i=Math.max(0,st.i-1);draw()};fr.scrollTop=0;$('#dlg').scrollTop=0;const field=fr.querySelector('input,select,textarea');if(field&&!matchMedia('(max-width:700px)').matches)field.focus({preventScroll:true})};
   function draw(){
     const L=Ls();if(st.i>=L.length)return sum(L);
     const q=L[st.i],t=L.length+1;let b='';
@@ -871,12 +894,12 @@ function wiz(pre={}){
     fr.innerHTML=`<h2>Obrir nova incidència</h2>${bar(st.i+1,t)}<p class="meta" style="margin:0">Pas ${st.i+1} de ${t}</p><h3 class="wq">${h(q.q)}</h3>${q.pic?picHtml():''}${q.info?`<div class="sumbox">${q.info.map(x=>`<div>✔ ${h(x)}</div>`).join('')}</div>`:''}${b}${foot(st.i>0,q.t==='c'?'':'Següent →')}`;
     wire();
     const pi=fr.querySelector('.pic img');if(pi)pi.onerror=()=>{pi.outerHTML=window.CHB_SVG};
-    fr.querySelectorAll('.wopt').forEach(bt=>bt.onclick=()=>{const o=q.o[bt.dataset.k];if(q.key==='chk'&&o[1]==='ok'){$('#dlg').close();toast('Perfecte! Si torna a fallar, obre una incidència.');return}a[q.key]=o[1];a.__[q.key]=o[0];st.i++;draw()});
+    fr.querySelectorAll('.wopt').forEach(bt=>bt.onclick=()=>{const o=q.o[bt.dataset.k];if(q.key==='chk'&&o[1]==='ok'){playUiSound('resolve');$('#dlg').close();toast('Perfecte! Si torna a fallar, obre una incidència.');return}playUiSound('click');a[q.key]=o[1];a.__[q.key]=o[0];st.i++;draw()});
     fr.onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(fr)),er=m=>{$('#err').textContent=m};
       if(q.t==='s'){if(d.v==='?')return er('Tria una opció.');a[q.key]=d.v;a.__[q.key]=fr.querySelector('select').selectedOptions[0].text}
       else if(q.t==='t'){const v=(d.v||'').trim();if(q.req&&!v)return er('Aquest camp és obligatori.');a[q.key]=v}
       else{for(const f of q.f){const v=(d[f.k]||'').trim();if(f.req&&!v)return er(`Falta: ${f.l}.`);if(f.type==='email'&&!/^\S+@\S+\.\S+$/.test(v))return er('Escriu un correu vàlid.');a[f.k]=v}}
-      st.i++;draw()};
+        playUiSound('click');st.i++;draw()};
   }
   function sum(L){
     const det=[];L.forEach(q=>{if(q.t==='f'||q.key==='cat'||q.key==='dev')return;const v=a.__[q.key]!==undefined?a.__[q.key]:a[q.key];if(v!==''&&v!==undefined)det.push([q.s,v])});
@@ -894,7 +917,7 @@ function wiz(pre={}){
         n.desc=(a.psub||a.alt||n.motiu)+(a.desc?': '+a.desc:'')}
       const r=route(a);n.circuit=r.c;if(r.c==='presencial'){const v=nextSlot();if(v)n.visit={...v,room:roomOf(a)}}
       if(!MOT.includes(n.motiu))MOT.push(n.motiu);
-      addLog(n,'Incidència creada',who||'Docent');S.incidents.unshift(n);save();
+      addLog(n,'Incidència creada',who||'Docent');S.incidents.unshift(n);save();playUiSound('incident');
       tab='inc';f.st='actives';f.q='';$('#gq').value='';$('#dlg').close();render();toast(n.visit?'Incidència creada · '+slotLabel(n.visit):'Incidència creada · prioritat '+PR[p].toLowerCase())};
   }
   draw();if(!$('#dlg').open)$('#dlg').showModal();
