@@ -388,13 +388,21 @@ function bindInc(){
 }
 
 /* ---------- Inventari ---------- */
+function nextInventoryCode(type){
+  const prefix={Ordinador:'ORD',Chromebook:'CHB',Tauleta:'TAB'}[type]||'INV';
+  const used=new Set(S.devices.map(d=>String(d.code||'').toUpperCase()));
+  let n=1,code;
+  do{code=`${prefix}-${String(n++).padStart(3,'0')}`}while(used.has(code));
+  return code;
+}
 function devForm(dev=null,pre={}){
   const cur=dev||pre,cs=S.carts.map(c=>[c.id,`${c.name} (${c.loc||'sense ubicació'})`]);
   const known=[...new Set([...S.carts.map(c=>c.loc),...S.devices.map(d=>d.loc)].filter(Boolean))];
   const m0=cur.cartId?'cart':(cur.mode||(cur.loc?'fix':(dev?'loose':(cs.length?'cart':'fix'))));
+  const type0=cur.type||'Chromebook';
   form(dev?'Edita el dispositiu':'Nou dispositiu',`
-   <div class="row"><label>Codi únic<input name="code" required value="${h(cur.code||'')}" placeholder="Ex.: CHB-001"></label>
-   <label>Tipus<select name="type">${opts(TYPES.map(t=>[t,t]),cur.type||'Chromebook')}</select></label></div>
+  <div class="row"><label>Codi d'inventari<input name="code" required value="${h(dev?cur.code:nextInventoryCode(type0))}" placeholder="Ex.: CHB-001"${dev?'':' readonly'}></label>
+   <label>Tipus<select name="type" id="dtype">${opts(TYPES.map(t=>[t,t]),type0)}</select></label></div>
    <label>On és l\u2019equip?<select name="mode" id="dm">${opts([['cart','🛒 En un carro'],['fix','🖥 Fix en una aula (sobretaula, mestre…)'],['loose','📦 Solt, sense lloc fix']],m0)}</select></label>
    <div class="row pm pm-cart"><label>Carro<select name="cartId">${opts(cs,cur.cartId||'')}</select></label>
    <label>Número de llista<input name="num" type="number" min="1" value="${h(cur.num||'')}" placeholder="Posició al carro"></label></div>
@@ -403,7 +411,7 @@ function devForm(dev=null,pre={}){
    <div class="pm pm-loose"><label>Última ubicació o qui el té (opcional)<input name="loc2" list="dll" autocomplete="off" value="${h(m0==='loose'?(cur.loc||''):'')}" placeholder="Ex.: Secretaria, préstec a la Marta"></label></div>
    <datalist id="dll">${known.map(x=>`<option value="${h(x)}">`).join('')}</datalist>
    <label>Notes<input name="notes" value="${h(cur.notes||'')}" placeholder="Opcional"></label>`,
-   d=>{const code=d.code.trim().toUpperCase().replace(/[\s\/]+/g,'-');
+  d=>{const code=(dev?d.code:nextInventoryCode(d.type)).trim().toUpperCase().replace(/[\s\/]+/g,'-');
      if(!code)return'Cal un codi.';
      if(S.devices.some(x=>x!==dev&&x.code===code))return`El codi ${code} ja existeix.`;
      let num='',cartId='',loc='',spot='';
@@ -420,7 +428,7 @@ function devForm(dev=null,pre={}){
      if(dev){S.incidents.forEach(i=>{if(i.code===dev.code)i.code=code});Object.assign(dev,obj)}
      else S.devices.push({...obj,rs:'',rep:'',repOf:''});
      toast('Dispositiu desat')});
-  const dm=$('#dm'),sync=()=>document.querySelectorAll('.pm').forEach(e=>{e.style.display=e.classList.contains('pm-'+dm.value)?'':'none'});dm.onchange=sync;sync();
+  const dm=$('#dm'),dtype=$('#dtype'),codeInput=$('[name="code"]'),sync=()=>document.querySelectorAll('.pm').forEach(e=>{e.style.display=e.classList.contains('pm-'+dm.value)?'':'none'});dm.onchange=sync;dtype.onchange=()=>{if(!dev)codeInput.value=nextInventoryCode(dtype.value)};sync();
 }
 function renderInv(){
   const L=S.devices.filter(d=>{
