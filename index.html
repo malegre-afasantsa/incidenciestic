@@ -619,9 +619,16 @@ async function pdfRooms(rooms){
     doc.setTextColor(81,101,122);doc.setFont('helvetica','bold');doc.setFontSize(7);
     doc.text('ESCOLA SANT SALVADOR  ·  PORTAL TIC',x+7,y+40);
     doc.setTextColor(25,45,70);doc.setFontSize(8);doc.text("IDENTIFICADOR D'AULA",x+7,y+50);
-    doc.setTextColor(20,72,120);doc.setFontSize(16);
-    const name=doc.splitTextToSize(room.name,74).slice(0,2);
-    doc.text(name,x+7,y+60);
+    doc.setTextColor(20,72,120);doc.setFont('helvetica','bold');
+    const nameWidth=W-14,nameHeight=17;
+    let nameSize=16,nameLines=[];
+    for(;nameSize>=8;nameSize-=.5){
+      doc.setFontSize(nameSize);
+      nameLines=doc.splitTextToSize(room.name,nameWidth);
+      if(nameLines.length*nameSize*.3528*1.15<=nameHeight)break;
+    }
+    const nameLineHeight=nameSize*.3528*1.15;
+    doc.text(nameLines,x+7,y+52+(nameHeight-nameLines.length*nameLineHeight)/2+nameSize*.3528);
     doc.setFillColor(246,248,251);doc.roundedRect(x+20,y+69,48,48,2,2,'F');
     doc.addImage(qr,'PNG',x+24,y+73,40,40);
     doc.setTextColor(29,95,168);doc.setFont('helvetica','bold');doc.setFontSize(8);
@@ -645,6 +652,10 @@ async function pdf(codes){
     if(logo)addContainedImage(doc,logo,x+3,y+3,10,6);
     doc.setTextColor(20,72,120);doc.setFont('helvetica','bold');doc.setFontSize(8);
     doc.text('APLICATIU TIC',x+15,y+8);
+    doc.setTextColor(81,101,122);doc.setFontSize(8);
+    const type=d.type||'Dispositiu',typeWidth=doc.getTextWidth(type);
+    doc.setFontSize(Math.min(8,8*36/typeWidth));
+    doc.text(type,x+3,y+15);
     doc.setTextColor(25,45,70);doc.setFont('helvetica','bold');doc.setFontSize(12);
     const codeWidth=doc.getTextWidth(d.code);
     doc.setFontSize(Math.min(12,12*36/codeWidth));
@@ -763,7 +774,7 @@ function helpHtml(){
    inv:[I('<span class="btn s">Incidència</span>','Al costat de cada equip: obre una incidència d\u2019aquell dispositiu.','Incidència des de l\u2019equip'),
      I('<span class="dot"></span>Correcte <span class="dot bad"></span>Incidència','El puntet mostra l\u2019estat de cada dispositiu d\u2019un cop d\u2019ull.','Estat'),
      I('<span class="tag">🛒 Carro 1 · núm. 4</span><span class="tag">🖥 4t A · taula del mestre</span><span class="tag">📦 Solt</span>','Cada equip pot ser en un carro, fix en una aula (sobretaula, mestre…) o solt, sense lloc fix. Pots filtrar l\u2019inventari per ubicació.','Ubicació dels equips'),
-     I('<span class="btn s">Edita</span><span class="btn p">Etiquetes PDF</span>','Filtra per ubicació, marca els dispositius amb la casella i genera etiquetes compactes (50×22 mm, 48 per full A4). Surten ordenades: primer carros, després fixos i després solts, amb carro i número o aula i lloc.','Etiquetes i edició')],
+     I('<span class="btn s">Edita</span><span class="btn p">Etiquetes PDF</span>','Filtra per ubicació, marca els dispositius amb la casella i genera etiquetes de 62×28 mm (27 per full A4), amb el tipus de dispositiu sobre el codi. Surten ordenades: primer carros, després fixos i després solts, amb carro i número o aula i lloc.','Etiquetes i edició')],
    carts:[I('<span class="slot f" style="width:38px">1</span><span class="slot x" style="width:38px">3</span><span class="slot" style="width:38px">4</span>','Cada quadrat és una posició del carro. Verd: correcte · vermell: amb incidència · buit: lliure. Toca una posició buida per afegir-hi un dispositiu.','Colors del carro'),
      I('<span class="btn p">+ Nou carro</span><span class="btn s">Configura</span>','Crea carros, edita\u2019n el nom i la ubicació (l\u2019aula que es proposa als docents) o genera-hi etiquetes.','Gestió de carros')]};
   const ticGen=[
