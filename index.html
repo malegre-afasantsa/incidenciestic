@@ -350,7 +350,8 @@ function openDeviceScanner(){
     if(scanHandled)return;scanHandled=true;playUiSound('scan');await closeDeviceScanner();openScannedDevice(text);
   },()=>{}).catch(async error=>{
     const status=$('#scanStatus');if(status){status.classList.add('error');status.textContent='No se pudo abrir la cámara. Comprueba el permiso de cámara y abre esta app con HTTPS.'}
-    await closeDeviceScanner(false);
+    const scanner=deviceScanner;deviceScanner=null;
+    if(scanner){try{await scanner.stop()}catch(e){}try{scanner.clear()}catch(e){}}
   });
 }
 
@@ -491,17 +492,17 @@ function bindInc(){
   const hb=$('#heroNew');if(hb)hb.onclick=()=>wiz();const cn=$('#chName');if(cn)cn.onclick=e=>{e.preventDefault();try{localStorage.removeItem('ss-nom')}catch(x){}render()};
   document.querySelectorAll('details.cm').forEach(el=>el.ontoggle=()=>el.open?openC.add(el.dataset.d):openC.delete(el.dataset.d));
   const send=id=>{const inp=document.querySelector(`[data-ci="${id}"]`),t=inp.value.trim();if(!t)return;
-    const w=who();if(!w)return;addLog(S.incidents.find(x=>x.id===id),t,w,false);openC.add(id);save();render()};
+    const w=who();if(!w)return;addLog(S.incidents.find(x=>x.id===id),t,w,false);openC.add(id);save();playUiSound('change');render()};
   document.querySelectorAll('[data-cb]').forEach(b=>b.onclick=()=>send(b.dataset.cb));
   document.querySelectorAll('[data-ci]').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')send(i.dataset.ci)});
   document.querySelectorAll('[data-mo]').forEach(s=>s.onchange=()=>{const i=S.incidents.find(x=>x.id===s.dataset.mo);
-    addLog(i,`Motiu: ${i.motiu} → ${s.value}`);i.motiu=s.value;save();render();toast('Motiu actualitzat')});
+    addLog(i,`Motiu: ${i.motiu} → ${s.value}`);i.motiu=s.value;save();playUiSound('change');render();toast('Motiu actualitzat')});
   document.querySelectorAll('[data-do]').forEach(b=>b.onclick=()=>{
     const i=S.incidents.find(x=>x.id===b.dataset.id),a=b.dataset.do;
     if(a==='edit')return i.kind==='mail'?mailForm(i):(i.kind?simpleEdit(i):incForm('',i));
     if(a==='visit')return visitForm(i);
     if(a==='del'){if(confirm('Vols eliminar aquesta incidència?')){S.incidents=S.incidents.filter(x=>x!==i);save();render()}return}
-    addLog(i,`Estat: ${ST[i.st]} → ${ST[a]}`);i.st=a;save();render();toast('Estat actualitzat')});
+    addLog(i,`Estat: ${ST[i.st]} → ${ST[a]}`);i.st=a;save();playUiSound(a==='resolta'?'resolve':'change');render();toast('Estat actualitzat')});
 }
 
 /* ---------- Inventari ---------- */
