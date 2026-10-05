@@ -6,6 +6,7 @@
 <title>Incidències TIC · Escola Sant Salvador</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <meta name="color-scheme" content="light">
 <style>
 :root{--bg:#f1f4f6;--card:#fff;--ink:#14213d;--mut:#5d6b82;--line:#dde3ea;--acc:#0b7a75;--acc2:#e6f4f3;--red:#d64545;--amb:#e09a1f;--grn:#2f9e63;--blu:#3b6fd4;
@@ -183,9 +184,9 @@ const TYPES=['Ordinador','Chromebook','Tauleta'];
 const ST={oberta:'Oberta',curs:'En curs',resolta:'Resolta'};
 const PR={alta:'Alta',mitjana:'Mitjana',baixa:'Baixa'};
 const MOT=['Pantalla','Bateria o càrrega','No s\u2019encén','Teclat o ratolí','Wi-Fi o programari','Dany físic','Altres'];
-const COLS={carts:'id',devices:'code',incidents:'id'};
+const COLS={carts:'id',devices:'code',incidents:'id',rooms:'id'};
 let S, DB=false, ready=true, apiLoading=true, syncing=false, syncPending=false;
-let synced={carts:{},devices:{},incidents:{}}, syncedConfig=null, apiError='';
+let synced={carts:{},devices:{},incidents:{},rooms:{}}, syncedConfig=null, apiError='';
 let cfg={user:'tic',role:'admin',logo:'',theme:null};
 let isTic=false, tab='inc', f={st:'actives',q:'',cart:'',type:'',ds:'act'}, sel=new Set(), openC=new Set();
 
@@ -198,7 +199,7 @@ function seed(){
     {id:'i1',code:'CHB-003',desc:'La pantalla té una esquerda a la cantonada.',motiu:'Pantalla',prio:'mitjana',st:'oberta',date:'2026-09-28',who:'Marta (3r A)',cm:[]},
     {id:'i2',code:'TAB-002',desc:'No carrega la bateria.',motiu:'Bateria o càrrega',prio:'alta',st:'curs',date:'2026-09-30',who:'Jordi (P5)',cm:[]}]};
 }
-S={carts:[],devices:[],incidents:[]};
+S={carts:[],devices:[],incidents:[],rooms:[]};
 
 async function apiRequest(path,body){
   const r=await fetch(path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
@@ -245,7 +246,7 @@ function save(){
 async function initDb(){
   try{
     const data=await apiRequest('/api/data');
-    S={carts:data.carts||[],devices:data.devices||[],incidents:data.incidents||[]};
+    S={carts:data.carts||[],devices:data.devices||[],incidents:data.incidents||[],rooms:data.rooms||[]};
     synced=Object.fromEntries(Object.entries(COLS).map(([k,key])=>[k,Object.fromEntries(S[k].map(o=>[o[key],JSON.stringify(o)]))]));
     cfg.logo=(data.config&&data.config.logo)||'';LOGO=cfg.logo;cfg.theme=(data.config&&data.config.theme)||null;
     syncedConfig=JSON.stringify({logo:LOGO,theme:cfg.theme});
@@ -253,7 +254,7 @@ async function initDb(){
     try{if(LOGO)localStorage.setItem('ss-logo',LOGO);else localStorage.removeItem('ss-logo');localStorage.setItem('ss-theme',JSON.stringify(cfg.theme))}catch(e){}
     applyLogo();DB=true;ready=true;apiError='';isTic=!!(data.me&&data.me.role);
     if(isTic){cfg.user=data.me.username||data.me.name;cfg.role=data.me.role}
-  }catch(e){DB=false;ready=true;isTic=false;S={carts:[],devices:[],incidents:[]};apiError=e.message||'No se pudo conectar con la API';}
+  }catch(e){DB=false;ready=true;isTic=false;S={carts:[],devices:[],incidents:[],rooms:[]};apiError=e.message||'No se pudo conectar con la API';}
   apiLoading=false;render();
 }
 
@@ -456,7 +457,7 @@ function bindInv(){
   if(!isTic){return}
   const vis=()=>[...document.querySelectorAll('[data-sel]')].map(x=>x.dataset.sel);
   if($('#addDev'))$('#addDev').onclick=()=>devForm();
-  if($('#demo'))$('#demo').onclick=()=>{S=seed();save();render()};
+  if($('#demo'))$('#demo').onclick=()=>{const example=seed();S.carts=example.carts;S.devices=example.devices;save();render()};
   if($('#clr'))$('#clr').onclick=()=>{sel.clear();render()};
   if($('#pdf'))$('#pdf').onclick=()=>pdf([...sel].filter(c=>devOf(c)).sort());
   if($('#all'))$('#all').onchange=e=>{vis().forEach(c=>e.target.checked?sel.add(c):sel.delete(c));render()};
@@ -467,6 +468,34 @@ function bindInv(){
 }
 
 /* ---------- Etiquetes PDF ---------- */
+async function pdfRooms(rooms){
+  if(!rooms.length)return;
+  if(!window.jspdf){toast('No se pudo cargar el generador PDF');return}
+  if(typeof window.qrcode!=='function'){toast('No se pudo cargar el generador QR');return}
+  if(!LOGO.startsWith('data:image/')){toast('Carga primero el logo de la escuela desde Opciones TIC');return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=90,H=50,per=10;
+  const qr=window.qrcode(0,'M');qr.addData('https://ticsantsa.vercel.app');qr.make();
+  const qrImg=new Image();qrImg.src=qr.createDataURL(5,1);
+  try{await qrImg.decode()}catch(e){toast('No se pudo generar la imagen QR');return}
+  const canvas=document.createElement('canvas');canvas.width=320;canvas.height=320;
+  canvas.getContext('2d').drawImage(qrImg,0,0,320,320);
+  const qrData=canvas.toDataURL('image/png');
+  rooms.slice().sort((a,b)=>a.name.localeCompare(b.name,'ca')).forEach((room,i)=>{
+    if(i&&i%per===0)doc.addPage();
+    const k=i%per,x=10+(k%2)*95,y=10+Math.floor(k/2)*55;
+    doc.setDrawColor(150);doc.roundedRect(x,y,W,H,2,2);
+    doc.addImage(LOGO,'JPEG',x+4,y+3,25,10);
+    doc.addImage(qrData,'PNG',x+63,y+10,22,22);
+    doc.setTextColor(25,45,70);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text('Reporta incidències tècniques',x+4,y+20);
+    doc.setFont('helvetica','normal');doc.setFontSize(7);
+    doc.text("Identificador d'aula:",x+4,y+31);
+    doc.setFont('helvetica','bold');doc.setFontSize(14);
+    const name=doc.splitTextToSize(room.name,56);
+    doc.text(name.slice(0,2),x+4,y+40);
+  });
+  try{doc.save('etiquetes-aules-sant-salvador.pdf')}catch(e){toast('No se pudo descargar el PDF')}
+}
 function pdf(codes){
   if(!codes.length)return;
   if(!window.jspdf){toast('No s\u2019ha pogut carregar el generador de PDF');return}
@@ -539,6 +568,26 @@ async function manageUsers(){
     $('#dlg').showModal();
   }catch(e){toast(e.message||'No se pudieron cargar los usuarios')}
 }
+function roomForm(room=null){
+  form(room?'Edita l\u2019aula':'Nova aula',`<label>Nom de l\u2019aula<input name="name" required maxlength="80" value="${h(room?room.name:'')}" placeholder="Ex.: 4t A"></label>`,d=>{
+    const name=d.name.trim();
+    if(!name)return'Escriu el nom de l\u2019aula.';
+    if(S.rooms.some(r=>r!==room&&r.name.toLocaleLowerCase()===name.toLocaleLowerCase()))return'Ja existeix aquesta aula.';
+    if(room)room.name=name;else S.rooms.push({id:uid(),name});
+    toast('Aula desada');
+  });
+}
+function renderRooms(){
+  const rows=S.rooms.slice().sort((a,b)=>a.name.localeCompare(b.name,'ca'));
+  return `<div class="bar"><span class="meta">${rows.length} ${rows.length===1?'aula':'aules'}</span><div class="sp"></div><button class="btn" id="roomsPdf"${rows.length?'':' disabled'}>Etiquetes PDF</button><button class="btn p" id="roomAdd">+ Nova aula</button></div>${rows.length?`<div class="tw"><table><thead><tr><th>Aula</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td><b>${h(r.name)}</b></td><td><button class="btn s" data-room-edit="${h(r.id)}">Edita</button> <button class="btn s d" data-room-del="${h(r.id)}">Elimina</button> <button class="btn s" data-room-pdf="${h(r.id)}">PDF</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Encara no hi ha aules. Crea\u2019n una perquè el professorat la pugui seleccionar.</div>'}`;
+}
+function bindRooms(){
+  $('#roomAdd').onclick=()=>roomForm();
+  const all=$('#roomsPdf');if(all)all.onclick=()=>pdfRooms(S.rooms);
+  document.querySelectorAll('[data-room-edit]').forEach(b=>b.onclick=()=>roomForm(S.rooms.find(r=>r.id===b.dataset.roomEdit)));
+  document.querySelectorAll('[data-room-del]').forEach(b=>b.onclick=()=>{const room=S.rooms.find(r=>r.id===b.dataset.roomDel);if(room&&confirm(`Eliminar l\u2019aula ${room.name}?`)){S.rooms=S.rooms.filter(r=>r!==room);save();render()}});
+  document.querySelectorAll('[data-room-pdf]').forEach(b=>b.onclick=()=>pdfRooms(S.rooms.filter(r=>r.id===b.dataset.roomPdf)));
+}
 $('#modeBtn').onclick=()=>{
   if(isTic)return form('Opciones TIC',`<p class="meta" style="margin:0">Sesión: ${h(cfg.user)}. Puedes cambiar la contraseña o volver a la vista docente.</p>${cfg.role==='admin'?'<button type="button" class="btn" id="usersBtn">Gestionar usuarios</button>':''}<label>Contraseña actual<input name="current" type="password" required autocomplete="current-password"></label><label>Nueva contraseña (mínimo 8 caracteres, opcional)<input name="pass" type="password" placeholder="Déjalo vacío para no cambiarla" autocomplete="new-password"></label><label>Logo de la escuela (imagen)<input type="file" id="logoF" accept="image/*"></label>`,
     async d=>{if(d.pass.trim()){try{await apiRequest('/api/auth',{action:'password',current:d.current,password:d.pass})}catch(e){return e.message}}save();toast('Opciones actualizadas')},'Guardar')||($('#frm').querySelector('.fb').insertAdjacentHTML('afterbegin','<button type="button" class="btn" id="out">Salir del modo TIC</button>'),$('#out').onclick=()=>{$('#dlg').close();setTic(false)},$('#logoF').onchange=setLogoFile,$('#usersBtn')&&($('#usersBtn').onclick=manageUsers));
@@ -555,7 +604,7 @@ function helpHtml(){
   const docent=[
    I(st(1,'<span class="btn p">🚨 Avisar d\u2019una incidència</span>')+st(2,'Respon unes preguntes')+st(3,'Fes les comprovacions')+st(4,'Rep la data de la visita'),'No cal usuari ni contrasenya. Només has de seguir els passos; l\u2019app s\u2019encarrega de la resta.','Com avisar en 4 passos',1),
    I(o('💻 Ordinador, Chromebook o tauleta')+o2('🏫 Pantalla, projector o robot')+o2('✉ Correu o compte'),'Tria què falla. Segons la resposta, l\u2019app et farà preguntes adaptades: no cal saber de tecnologia.','Què vols comunicar?'),
-   I('<span class="gq" style="width:auto;margin:0;padding:6px 12px;font-size:13px">4t A</span>'+o('No ho sé / no té etiqueta'),'L\u2019aula és obligatòria; l\u2019app recorda l\u2019última que has fet servir. Si l\u2019equip és de l\u2019inventari, tria\u2019l a la llista (hi ha una foto il·lustrativa); si no el coneixes, tria «No ho sé».','Aula i equip'),
+  I('<span class="gq" style="width:auto;margin:0;padding:6px 12px;font-size:13px">Tria l\u2019aula…</span>'+o('No ho sé / no té etiqueta'),'Tria l\u2019aula de la llista. Les aules les configura el personal TIC. Si l\u2019equip és de l\u2019inventari, tria\u2019l a la llista (hi ha una foto il·lustrativa); si no el coneixes, tria «No ho sé».','Aula i equip'),
    I(o2('Sí, continua sense funcionar')+o2('No, ara ja funciona'),'Abans d\u2019enviar, prova les comprovacions que et proposem (cables, endoll, reinici…). Si ja funciona, no es crea cap incidència.','Comprovacions'),
    I(o2('Sí: avui no puc fer la classe')+o2('Em dificulta la feina')+o2('No és urgent'),'Només has de dir si et bloqueja la feina. La prioritat la calcula l\u2019app.','Urgència'),
    I('<span class="tag">🟠 Assistència presencial</span><span class="tag">🟢 Sense desplaçament</span><span class="tag">📧 Gestió de compte</span>','L\u2019app decideix sola si cal anar a l\u2019aula. Si cal, assigna la primera hora lliure del mateix dia (09:00–13:00 o 14:20–15:40) i l\u2019equip TIC pot canviar-la. Els problemes de compte no porten desplaçament.','Què passarà després?'),
@@ -575,7 +624,8 @@ function helpHtml(){
    carts:[I('<span class="slot f" style="width:38px">1</span><span class="slot x" style="width:38px">3</span><span class="slot" style="width:38px">4</span>','Cada quadrat és una posició del carro. Verd: correcte · vermell: amb incidència · buit: lliure. Toca una posició buida per afegir-hi un dispositiu.','Colors del carro'),
      I('<span class="btn p">+ Nou carro</span><span class="btn s">Configura</span>','Crea carros, edita\u2019n el nom i la ubicació (l\u2019aula que es proposa als docents) o genera-hi etiquetes.','Gestió de carros')]};
   const ticGen=[
-   I('<nav style="margin:0"><button class="on">Incidències<span class="n">3</span></button><button>Inventari</button><button>Carros</button></nav>','Només el personal TIC veu les tres pestanyes. El número indica el que està pendent.','Pestanyes'),
+  I('<nav style="margin:0"><button class="on">Incidències<span class="n">3</span></button><button>Inventari</button><button>Carros</button><button>Aules</button></nav>','Només el personal TIC veu les pestanyes. El número indica el que està pendent.','Pestanyes'),
+    I('<span class="btn p">+ Nova aula</span><span class="btn">Etiquetes PDF</span>','Afegeix i mantén la llista d’aules. El professorat les podrà seleccionar en notificar una incidència; les etiquetes inclouen el logo, el QR del portal i l’identificador de l’aula.','Aules i etiquetes'),
    I('<span class="btn">Opcions TIC</span>','Des d\u2019aquí canvies l\u2019usuari i la contrasenya TIC, puges el logo de l\u2019escola (els colors de l\u2019app s\u2019hi adapten) o surts del mode TIC. Per entrar, usa «Accés TIC».','Accés i opcions')];
   const items=isTic?[...(tic[tab]||[]),...ticGen]:docent;
   return `<summary>❓ Ajuda: què veig a la pantalla i com funciona?</summary><div class="hg">${items.join('')}</div>
@@ -593,12 +643,10 @@ const C=(key,s,q,o)=>({key,s,q,t:'c',o:o.map(x=>typeof x==='string'?[x,x]:x)});
 const T=(key,s,q,req,area,def,list)=>({key,s,q,t:'t',req,area,def,list});
 const nm0=()=>{try{return(localStorage.getItem('ss-nom')||'').trim()}catch(e){return''}};
 function Q(a){
-  const q=[],devs=S.devices.filter(d=>d.rs!=='fet');let lr='';try{lr=localStorage.getItem('ss-aula')||''}catch(e){}
+  const q=[],devs=S.devices.filter(d=>d.rs!=='fet');
   q.push(C('cat','Tipus','Què vols comunicar?',[['💻 Un ordinador, Chromebook o tauleta','equip'],['🏫 Pantalla, projector o robot de l\u2019aula','aula'],['✉ El meu correu o compte del centre','compte']]));
   if(a.cat==='equip'||a.cat==='aula'){
-    const pd=S.devices.find(x=>x.code===a.dev),pc=pd&&cartOf(pd.cartId);
-    const known=[...new Set([...S.carts.map(c=>c.loc),...S.devices.map(d=>d.loc),...S.incidents.map(i=>i.room)].filter(Boolean))];
-    q.push(T('room','Aula','En quina aula és? (ex.: 4t A)',true,false,(pc&&pc.loc)||(pd&&pd.loc)||lr,known));
+    q.push({key:'room',s:'Aula',q:S.rooms.length?'En quina aula és?':'Encara no hi ha aules configurades. Demana al personal TIC que n’afegeixi una.',t:'s',o:S.rooms.slice().sort((a,b)=>a.name.localeCompare(b.name,'ca')).map(r=>[r.name,r.name])});
   }
   const p=a.prob||'';
   if(a.cat==='equip'){
@@ -733,7 +781,7 @@ function wiz(pre={}){
     wire();
     fr.onsubmit=e=>{e.preventDefault();const p=isTic?new FormData(fr).get('pr'):pr,who=(a.who||nm0()).trim();
       try{if(who)localStorage.setItem('ss-nom',who)}catch(x){}
-      const n={id:uid(),st:'oberta',date:today(),who,prio:p,cm:[],det,room:(a.room||'').trim()};try{if(n.room)localStorage.setItem('ss-aula',n.room)}catch(x){}
+      const n={id:uid(),st:'oberta',date:today(),who,prio:p,cm:[],det,room:(a.room||'').trim()};
       if(a.cat==='equip'){n.code=a.dev||'Equip sense codi';n.motiu=a.prob;n.desc=a.prob+(a.desc?': '+a.desc:'');
         if(!a.dev){n.kind='nodev';n.tagTxt='Equip sense codi';n.det=[['Equip',a.devfree||'—'],...det]}}
       else if(a.cat==='aula'){n.kind='aula';n.tagTxt='Equipament d\u2019aula';n.code=`🏫 ${a.rmodel||a.atype}${a.room?' · '+a.room:''}`;n.motiu=a.prob||'Altres';n.desc=(a.prob||a.atype)+(a.desc?': '+a.desc:'')}
@@ -758,13 +806,14 @@ function render(){
   $('#note').innerHTML=apiLoading?'<div class="note">Conectando con MongoDB…</div>':DB?(ready?'':'<div class="note">Cargando datos compartidos…</div>'):`<div class="note">No se pudo conectar con MongoDB/API (${h(apiError)}). Revisa MONGODB_URI y AUTH_SECRET.</div>`;
   const v=$('#view');
   if(unavailable){$('#tabs').innerHTML='';v.innerHTML=apiLoading?'<div class="empty">Conectando con la base de datos…</div>':`<div class="empty">La aplicación necesita MongoDB para funcionar. Corrige la configuración del servidor y vuelve a cargar.</div>`;return}
-  $('#tabs').innerHTML=[['inc','Incidències',S.incidents.filter(i=>i.st!=='resolta').length],['inv','Inventari',S.devices.filter(d=>d.rs!=='fet').length],['carts','Carros',S.carts.length]]
+  $('#tabs').innerHTML=[['inc','Incidències',S.incidents.filter(i=>i.st!=='resolta').length],['inv','Inventari',S.devices.filter(d=>d.rs!=='fet').length],['carts','Carros',S.carts.length],['rooms','Aules',S.rooms.length]]
    .map(([k,l,n])=>`<button class="${tab===k?'on':''}" data-t="${k}">${l}<span class="n">${n}</span></button>`).join('');
   document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;f.cart='';f.type='';render()});
   const hd=$('#help'),ho=hd.open;hd.innerHTML=helpHtml();hd.open=ho;
   if(tab==='inc'){v.innerHTML=renderInc();bindInc()}
   else if(tab==='inv'){v.innerHTML=renderInv();bindInv()}
-  else{v.innerHTML=renderCarts();bindCarts()}
+  else if(tab==='carts'){v.innerHTML=renderCarts();bindCarts()}
+  else{v.innerHTML=renderRooms();bindRooms()}
 }
 applyLogo();render();initDb();
 </script>

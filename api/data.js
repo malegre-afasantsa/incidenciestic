@@ -1,7 +1,7 @@
 const { db, tooMany, record } = require('./_lib/db');
 const A = require('./_lib/auth');
 
-const KEYS = { carts: 'id', devices: 'code', incidents: 'id' };
+const KEYS = { carts: 'id', devices: 'code', incidents: 'id', rooms: 'id' };
 const ID = /^[A-Za-z0-9._-]{1,64}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const str = (v, n) => (typeof v === 'string' ? v.slice(0, n) : '');
@@ -34,14 +34,15 @@ module.exports = async (req, res) => {
     const d = await db();
     const me = await A.session(req, d);
     if (req.method === 'GET') {
-      const [carts, devices, incidents, cfg] = await Promise.all([
+      const [carts, devices, incidents, rooms, cfg] = await Promise.all([
         d.collection('carts').find({}).toArray(),
         d.collection('devices').find({}).toArray(),
         d.collection('incidents').find({}).limit(5000).toArray(),
+        d.collection('rooms').find({}).sort({ name: 1 }).toArray(),
         d.collection('config').findOne({ _id: 'main' }),
       ]);
       const inc = incidents.map((i) => { const r = strip(i); if (!me) delete r.mail; return r; });
-      return res.status(200).json({ carts: carts.map(strip), devices: devices.map(strip), incidents: inc, config: cfg ? { logo: cfg.logo || '', theme: cfg.theme || null } : {}, me });
+      return res.status(200).json({ carts: carts.map(strip), devices: devices.map(strip), incidents: inc, rooms: rooms.map(strip), config: cfg ? { logo: cfg.logo || '', theme: cfg.theme || null } : {}, me });
     }
     if (!A.sameOrigin(req)) return res.status(403).json({ error: 'Origen no permès' });
     const ops = Array.isArray(req.body && req.body.ops) ? req.body.ops.slice(0, 200) : [];
