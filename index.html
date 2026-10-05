@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Incidències TIC · Escola Sant Salvador</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<meta name="color-scheme" content="light">
+<style>
+:root{--bg:#f1f4f6;--card:#fff;--ink:#14213d;--mut:#5d6b82;--line:#dde3ea;--acc:#0b7a75;--acc2:#e6f4f3;--red:#d64545;--amb:#e09a1f;--grn:#2f9e63;--blu:#3b6fd4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:16px 16px 80px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.logo{height:58px;border-radius:10px;background:#fff;border:1px solid var(--line)}
+h1{font-size:21px;margin:0;font-weight:800}
+header p{margin:0;color:var(--mut);font-size:13px}
+.sp{flex:1}
+.mode{font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--acc2);color:var(--acc)}
+.gq{width:100%;padding:12px 16px;border:1px solid var(--line);background:var(--card);border-radius:14px;font-size:16px;margin-bottom:12px}
+nav{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:16px;width:fit-content;max-width:100%;overflow-x:auto}
+nav button{border:0;background:none;padding:9px 16px;border-radius:10px;font-weight:600;color:var(--mut);cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--acc);color:#fff}
+nav .n{opacity:.75;font-weight:500;margin-left:4px}
+.btn{border:1px solid var(--line);background:var(--card);padding:9px 15px;border-radius:11px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.d{color:var(--red)}
+.btn.s{padding:5px 10px;font-size:13px;border-radius:9px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.bar select,.mini{padding:8px 11px;border:1px solid var(--line);background:var(--card);border-radius:10px}
+.mini{padding:2px 6px;font-size:13px}
+.note{background:var(--acc2);color:var(--ink);border-radius:12px;padding:9px 13px;font-size:13px;margin-bottom:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;cursor:pointer}
+.stat.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc2)}
+.stat b{display:block;font-size:26px;line-height:1.1}
+.stat span{color:var(--mut);font-size:13px}
+.list{display:grid;gap:10px}
+.inc{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--mut);border-radius:14px;padding:13px 15px;display:grid;gap:8px}
+.inc.alta{border-left-color:var(--red)}.inc.mitjana{border-left-color:var(--amb)}.inc.baixa{border-left-color:var(--blu)}
+.inc.resolta{opacity:.65}
+.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.code{font-weight:800;font-size:16px}
+.tag{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--acc2);color:var(--acc)}
+.tag.g{background:var(--bg);color:var(--mut)}
+.tag.w{background:#fcefd2;color:#8a5a00}
+.st-oberta{background:#fbe3e3;color:#b02a2a}.st-curs{background:#fcefd2;color:#8a5a00}.st-resolta{background:#dcf3e6;color:#1d7547}
+
+.desc{margin:0}.meta{color:var(--mut);font-size:13px}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+details.cm{font-size:14px}
+details.cm summary{cursor:pointer;color:var(--acc);font-weight:600;font-size:13px}
+.c{padding:7px 0;border-bottom:1px solid var(--line)}.c span{color:var(--mut);font-size:12px}.c.sys{color:var(--mut);font-style:italic}
+.cmf{display:flex;gap:6px;margin-top:8px}.cmf input{flex:1;padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:13px;color:var(--mut);font-weight:600}
+tr:last-child td{border-bottom:0}tr.off td{opacity:.55}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--grn);margin-right:6px}
+.dot.bad{background:var(--red)}.dot.off{background:var(--mut)}
+.carts{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.cart{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.cart h3{margin:0;font-size:17px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin:14px 0}
+.slot{aspect-ratio:1;border-radius:9px;border:1.5px dashed var(--line);background:none;font-weight:700;font-size:13px;color:var(--mut);cursor:pointer}
+.slot.f{border:1.5px solid var(--grn);background:var(--grn);color:#fff}
+.slot.w{border-color:var(--amb);background:var(--amb)}
+.slot.x{border-color:var(--red);background:var(--red)}
+.slot.hit{outline:3px solid var(--ink);outline-offset:2px}
+.leg{font-size:12px;color:var(--mut)}
+.empty{text-align:center;color:var(--mut);padding:36px 16px;background:var(--card);border:1px dashed var(--line);border-radius:14px}
+dialog{border:0;border-radius:18px;padding:0;width:min(460px,94vw);background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,16,28,.55)}
+dialog form{padding:20px;display:grid;gap:12px}
+dialog h2{margin:0;font-size:19px}
+label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--mut)}
+label input,label select,label textarea{padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-weight:400;color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.err{color:var(--red);font-size:13px;margin:0}
+.fb{display:flex;gap:8px;justify-content:flex-end}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.helpb{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:48px;height:48px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:22px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3);z-index:5}
+#help{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 18px}
+#help summary{cursor:pointer;font-weight:800;font-size:17px;padding:12px 0;color:var(--acc)}
+.hg{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding-bottom:14px}
+.hi{background:var(--bg);border-radius:12px;padding:12px 14px;display:grid;gap:8px;align-content:start}
+.hi .ill{pointer-events:none;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.hi p{margin:0;font-size:14px}.hi h4{margin:0;font-size:14px}
+.step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;font-weight:800;margin-right:6px}
+.hero{background:var(--acc);color:#fff;border-radius:18px;padding:22px;display:grid;gap:10px;text-align:center}.hero h2{margin:0;font-size:24px}.hero p{margin:0;opacity:.92}.hero a{color:#fff;opacity:.8;font-size:13px}.bigbtn{font-size:20px;padding:18px 22px;border-radius:16px;border:0;background:#fff;color:var(--acc);font-weight:800;cursor:pointer;width:100%}.lt{margin:22px 0 8px}
+.mode:empty{display:none}
+.prog{height:6px;border-radius:9px;background:var(--bg)}.prog i{display:block;height:100%;border-radius:9px;background:var(--acc)}
+.wq{margin:2px 0 0;font-size:17px}
+.wopts{display:grid;gap:8px;max-height:46vh;overflow-y:auto}
+.wopt{text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:11px 14px;cursor:pointer;display:grid;gap:2px}
+.wopt:hover,.wopt.on{border-color:var(--acc);background:var(--acc2)}.wopt b{font-weight:600}.wopt small{color:var(--mut);font-size:12px}
+.sumbox{background:var(--bg);border-radius:12px;padding:10px 14px;display:grid;gap:4px;font-size:14px;max-height:34vh;overflow-y:auto}.sumbox span{color:var(--mut)}
+/* ---------- UI renovada: sempre fons clar, colors del logotip ---------- */
+:root{color-scheme:light;--bg:#f6f8fb;--card:#fff;--ink:#1b2a41;--mut:#5f6f86;--line:#e3e9f1;--acc:#1d5fa8;--acc-d:#14457f;--acc2:#e8f1fb;--acc3:#f29f05;--sh:0 1px 2px rgba(20,40,80,.05),0 8px 22px rgba(20,40,80,.07)}
+body{background:var(--bg) linear-gradient(180deg,var(--acc2),transparent 280px) no-repeat;min-height:100vh}
+header{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px 18px;box-shadow:var(--sh);position:relative;overflow:hidden}
+header::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,var(--acc),var(--acc3))}
+.logo{height:54px;border:0;border-radius:8px}
+h1{color:var(--acc);letter-spacing:-.3px}
+.btn{transition:transform .12s,box-shadow .12s,border-color .12s;box-shadow:0 1px 2px rgba(20,40,80,.05)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(20,40,80,.1)}
+.btn.p{background:linear-gradient(135deg,var(--acc),var(--acc-d));border-color:var(--acc-d)}
+.gq{box-shadow:var(--sh);border-color:transparent}.gq:focus{outline:2px solid var(--acc)}
+nav,.stat{box-shadow:var(--sh);border-color:transparent}
+nav button.on{background:linear-gradient(135deg,var(--acc),var(--acc-d))}
+.stat.on{border-color:var(--acc3);box-shadow:0 0 0 2px var(--acc3)}
+.stat b{color:var(--acc)}
+.inc{border-radius:18px;box-shadow:var(--sh);border-top:0;border-right:0;border-bottom:0;transition:transform .12s}
+.inc:hover{transform:translateY(-1px)}
+.code{color:var(--acc)}
+.tag{background:var(--acc2);color:var(--acc)}
+.hero{background:radial-gradient(circle at 100% 0,rgba(255,255,255,.22),transparent 55%),linear-gradient(135deg,var(--acc),var(--acc-d));border-radius:24px;padding:28px 22px;box-shadow:0 12px 30px rgba(20,60,120,.22);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-30px;bottom:-30px;width:130px;height:130px;border-radius:50%;background:var(--acc3);opacity:.35}
+.hero h2{font-size:28px;position:relative;z-index:1}.hero p,.hero a,.bigbtn{position:relative;z-index:1}
+.bigbtn{box-shadow:0 6px 16px rgba(0,0,0,.18);transition:transform .12s;color:var(--acc-d)}.bigbtn:hover{transform:translateY(-2px) scale(1.01)}
+.lt{color:var(--acc-d);font-size:17px}
+dialog{border:0;border-radius:22px;box-shadow:0 24px 60px rgba(20,40,80,.3);background:var(--card);color:var(--ink);padding:22px}
+dialog::backdrop{background:rgba(20,35,60,.45);backdrop-filter:blur(2px)}
+.prog{background:var(--acc2)}.prog i{background:linear-gradient(90deg,var(--acc),var(--acc3))}
+.wopt{border-radius:14px;transition:transform .1s,border-color .1s}.wopt:hover{transform:translateX(3px)}
+.wopt.on,.wopt:hover{border-color:var(--acc);background:var(--acc2)}
+.helpb{background:linear-gradient(135deg,var(--acc),var(--acc-d))}
+#help{box-shadow:var(--sh);border-color:transparent}
+.pic{margin:0;display:flex;gap:14px;align-items:center;background:var(--acc2);border-radius:16px;padding:10px 14px}
+.pic img,.pic svg{width:120px;height:auto;border-radius:10px;background:#fff;flex:none}
+.pic figcaption{font-size:12px;color:var(--mut)}.pic figcaption b{display:block;color:var(--ink);font-size:13px}
+.toast{background:var(--acc-d);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <img class="logo" id="logoImg" alt="Escola Sant Salvador" src="https://agora.xtec.cat/ceipsantsalvador-tarragona/wp-content/uploads/usu671/2025/02/OIP-200x150.jpeg" onerror="this.style.display='none'">
+  <div><h1>Incidències TIC</h1><p>Escola Sant Salvador · Tarragona</p></div>
+  <div class="sp"></div>
+  <span class="mode" id="modeTag"></span>
+  <button class="btn" id="modeBtn"></button>
+  <button class="btn p" id="newInc">+ Obrir nova incidència</button>
+</header>
+<input class="gq" id="gq" type="search" placeholder="Cerca per número, carro, codi, estat, comentari…" aria-label="Cerca">
+<div id="note"></div>
+<nav id="tabs"></nav>
+<main id="view"></main>
+</div>
+<dialog id="dlg"><form id="frm"></form></dialog>
+<section class="wrap" style="padding-top:0"><details id="help"></details></section>
+<button class="helpb" id="helpb" aria-label="Ajuda" title="Ajuda">?</button>
+<div class="toast" id="toast"></div>
+
+<script>
+let LOGO='';const LOGO_URL='https://agora.xtec.cat/ceipsantsalvador-tarragona/wp-content/uploads/usu671/2025/02/OIP-200x150.jpeg';
+try{LOGO=localStorage.getItem('ss-logo')||''}catch(e){}
+const CHB_URL='https://www.ecopc.com/13107-large_default/acer-chromebook-spin-511-r752t-tactil-outlet-intel-celeron-n4020-11.jpg';
+window.CHB_SVG='<svg viewBox="0 0 160 110" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="110" fill="#fff"/><rect x="28" y="14" width="104" height="66" rx="6" fill="#2b3a55"/><rect x="33" y="19" width="94" height="56" rx="3" fill="#cfe3f8"/><circle cx="80" cy="47" r="12" fill="#fff" opacity=".8"/><path d="M12 84h136l-8 12H20z" fill="#9aa8bd"/><rect x="62" y="86" width="36" height="4" rx="2" fill="#7b8aa3"/></svg>';
+function picHtml(){return `<figure class="pic"><img alt="Chromebook d\u2019exemple" src="${CHB_URL}"><figcaption><b>Chromebook</b>Imatge il·lustrativa: el teu equip pot ser diferent.</figcaption></figure>`}
+function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;const M=Math.max(r,g,b),m=Math.min(r,g,b),l=(M+m)/2,d=M-m;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=M===r?((g-b)/d)%6:M===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360}return[h,s,l]}
+function themeFromImg(im){const c=document.createElement('canvas');c.width=48;c.height=36;const x=c.getContext('2d');x.drawImage(im,0,0,48,36);let d;try{d=x.getImageData(0,0,48,36).data}catch(e){return null}
+  const B=new Array(12).fill(0);for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[hh,s,l]=rgb2hsl(d[i],d[i+1],d[i+2]);if(s<.3||l>.88||l<.15)continue;B[Math.floor(hh/30)%12]+=s}
+  const ix=B.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]);if(!ix[0][0])return null;
+  const h1=ix[0][1]*30+15;let h2=null;for(const[v,i]of ix.slice(1)){const hh=i*30+15,dd=Math.min(Math.abs(hh-h1),360-Math.abs(hh-h1));if(v>ix[0][0]*.25&&dd>=45){h2=hh;break}}
+  return{h1,h2}}
+function applyTheme(t){const r=document.documentElement.style;if(!t||typeof t.h1!=='number'){['--acc','--acc-d','--acc2','--acc3'].forEach(k=>r.removeProperty(k));return}
+  r.setProperty('--acc',`hsl(${t.h1} 62% 36%)`);r.setProperty('--acc-d',`hsl(${t.h1} 66% 25%)`);r.setProperty('--acc2',`hsl(${t.h1} 60% 95%)`);r.setProperty('--acc3',`hsl(${t.h2==null?(t.h1+35)%360:t.h2} 85% 52%)`)}
+try{applyTheme(JSON.parse(localStorage.getItem('ss-theme')||'null'))}catch(e){}
+function applyLogo(){const i=document.getElementById('logoImg');if(!i)return;i.onerror=()=>{i.style.display='none'};const u=LOGO||LOGO_URL;i.style.display='';i.src=u}
+function setLogoFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,320/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);LOGO=c.toDataURL('image/jpeg',.9);cfg.logo=LOGO;const th=themeFromImg(c);cfg.theme=th;applyTheme(th);try{localStorage.setItem('ss-theme',JSON.stringify(th))}catch(err){}try{localStorage.setItem('ss-logo',LOGO)}catch(err){}applyLogo();save();toast('Logo actualizado')};im.src=r.result};r.readAsDataURL(f)}
+const TYPES=['Ordinador','Chromebook','Tauleta'];
+const ST={oberta:'Oberta',curs:'En curs',resolta:'Resolta'};
+const PR={alta:'Alta',mitjana:'Mitjana',baixa:'Baixa'};
+const MOT=['Pantalla','Bateria o càrrega','No s\u2019encén','Teclat o ratolí','Wi-Fi o programari','Dany físic','Altres'];
+const COLS={carts:'id',devices:'code',incidents:'id'};
+let S, DB=false, ready=true, apiLoading=true, syncing=false, syncPending=false;
+let synced={carts:{},devices:{},incidents:{}}, syncedConfig=null, apiError='';
+let cfg={user:'tic',role:'admin',logo:'',theme:null};
+let isTic=false, tab='inc', f={st:'actives',q:'',cart:'',type:'',ds:'act'}, sel=new Set(), openC=new Set();
+
+function seed(){
+  const carts=[{id:'c1',name:'Carro 1',loc:'Aula d\u2019informàtica',cap:12,note:'Chromebooks'},{id:'c2',name:'Carro 2',loc:'Pati cobert',cap:8,note:'Tauletes'}];
+  const devices=[];
+  for(let i=1;i<=5;i++)devices.push({code:'CHB-'+String(i).padStart(3,'0'),type:'Chromebook',cartId:'c1',num:i,notes:'',rs:'',rep:'',repOf:''});
+  for(let i=1;i<=3;i++)devices.push({code:'TAB-'+String(i).padStart(3,'0'),type:'Tauleta',cartId:'c2',num:i,notes:'',rs:'',rep:'',repOf:''});
+  return{carts,devices,incidents:[
+    {id:'i1',code:'CHB-003',desc:'La pantalla té una esquerda a la cantonada.',motiu:'Pantalla',prio:'mitjana',st:'oberta',date:'2026-09-28',who:'Marta (3r A)',cm:[]},
+    {id:'i2',code:'TAB-002',desc:'No carrega la bateria.',motiu:'Bateria o càrrega',prio:'alta',st:'curs',date:'2026-09-30',who:'Jordi (P5)',cm:[]}]};
+}
+S={carts:[],devices:[],incidents:[]};
+
+async function apiRequest(path,body){
+  const r=await fetch(path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(data.error||`Error HTTP ${r.status}`);
+  return data;
+}
+async function syncServer(){
+  if(syncing||!syncPending||!DB||!ready)return;
+  syncing=true;
+  try{
+    while(syncPending){
+      syncPending=false;
+      const ops=[],snap={};
+      for(const k in COLS){
+        const key=COLS[k],cur={};
+        S[k].forEach(o=>cur[o[key]]=JSON.stringify(o));
+        snap[k]=cur;
+        for(const id in cur)if(synced[k][id]!==cur[id])ops.push({col:k,op:'upsert',doc:JSON.parse(cur[id])});
+        for(const id in synced[k])if(!(id in cur))ops.push({col:k,op:'delete',id});
+      }
+      const config={logo:LOGO,theme:cfg.theme||null}, configJson=JSON.stringify(config);
+      if(syncedConfig!==configJson)ops.push({col:'config',op:'set',doc:config});
+      if(!ops.length)continue;
+      const result=await apiRequest('/api/data',{ops});
+      if(result.rejected)throw new Error('El servidor ha rechazat alguns canvis. Revisa que hagis iniciat sessió com a personal TIC.');
+      for(const op of ops){
+        if(op.col==='config')syncedConfig=configJson;
+        else if(op.op==='delete')delete synced[op.col][op.id];
+        else synced[op.col][op.doc[COLS[op.col]]]=JSON.stringify(op.doc);
+      }
+      if(Object.keys(snap).length)for(const k in COLS){
+        const key=COLS[k];
+        for(const id in snap[k])if(!synced[k][id]&&S[k].some(o=>o[key]===id))synced[k][id]=snap[k][id];
+      }
+    }
+  }catch(e){syncPending=true;toast(e.message||'No se han podido guardar los cambios.');}
+  finally{syncing=false;}
+}
+function save(){
+  if(!DB||!ready){toast('MongoDB no está disponible; no se guardó el cambio.');return}
+  syncPending=true;syncServer();
+}
+async function initDb(){
+  try{
+    const data=await apiRequest('/api/data');
+    S={carts:data.carts||[],devices:data.devices||[],incidents:data.incidents||[]};
+    synced=Object.fromEntries(Object.entries(COLS).map(([k,key])=>[k,Object.fromEntries(S[k].map(o=>[o[key],JSON.stringify(o)]))]));
+    cfg.logo=(data.config&&data.config.logo)||'';LOGO=cfg.logo;cfg.theme=(data.config&&data.config.theme)||null;
+    syncedConfig=JSON.stringify({logo:LOGO,theme:cfg.theme});
+    applyTheme(cfg.theme);
+    try{if(LOGO)localStorage.setItem('ss-logo',LOGO);else localStorage.removeItem('ss-logo');localStorage.setItem('ss-theme',JSON.stringify(cfg.theme))}catch(e){}
+    applyLogo();DB=true;ready=true;apiError='';isTic=!!(data.me&&data.me.role);
+    if(isTic){cfg.user=data.me.username||data.me.name;cfg.role=data.me.role}
+  }catch(e){DB=false;ready=true;isTic=false;S={carts:[],devices:[],incidents:[]};apiError=e.message||'No se pudo conectar con la API';}
+  apiLoading=false;render();
+}
+
+const $=s=>document.querySelector(s);
+const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const today=()=>new Date().toISOString().slice(0,10);
+const fmt=t=>new Date(t).toLocaleString('ca',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const cartOf=id=>S.carts.find(c=>c.id===id);
+const devOf=code=>S.devices.find(d=>d.code===code);
+const modeOf=d=>d.cartId?'cart':(d.mode||(d.loc?'fix':'loose'));
+const MIC={cart:'🛒',fix:'🖥',loose:'📦'};
+const place=d=>{if(!d)return'Dispositiu eliminat';if(d.rs==='fet')return'Desactivat';const c=cartOf(d.cartId);if(c)return`${c.name} · núm. ${d.num}`;const m=modeOf(d);if(m==='fix')return`${d.loc||'Aula sense indicar'}${d.spot?' · '+d.spot:''}`;return d.loc?`Solt · ${d.loc}`:'Solt · sense ubicació fixa'};
+const locOf=d=>{const c=cartOf(d.cartId);return(c?c.loc:d.loc)||''};
+const openCount=code=>S.incidents.filter(i=>i.code===code&&i.st!=='resolta').length;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+function opts(arr,sel){return arr.map(([v,l])=>`<option value="${h(v)}"${v===sel?' selected':''}>${h(l)}</option>`).join('')}
+function dtext(d){if(!d)return'';const c=cartOf(d.cartId);
+  return[d.code,d.type,d.num,c?'núm '+d.num:'',c&&c.name,c&&c.loc,c&&c.note,d.notes,d.loc,d.spot,''].join(' ').toLowerCase()}
+const match=(txt,q)=>q.toLowerCase().split(/\s+/).filter(Boolean).every(t=>txt.includes(t));
+const who=()=>{if(isTic)return'TIC';let n='';try{n=localStorage.getItem('ss-nom')||''}catch(e){}
+  if(!n){n=(prompt('El teu nom (per signar-ho):')||'').trim();if(!n)return null;try{localStorage.setItem('ss-nom',n)}catch(e){}}return n};
+const addLog=(i,text,w,sys=true)=>{(i.cm=i.cm||[]).push({id:uid(),who:w||'TIC',text,ts:Date.now(),sys})};
+
+function form(title,body,onSave,okLabel='Desa'){
+  const fr=$('#frm');
+  fr.innerHTML=`<h2>${h(title)}</h2>${body}<p class="err" id="err"></p><div class="fb"><button type="button" class="btn" id="cx">Cancel·la</button><button class="btn p">${okLabel}</button></div>`;
+  $('#cx').onclick=()=>$('#dlg').close();
+  fr.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(fr));const er=await onSave(d);
+    if(er){$('#err').textContent=er;return}
+    save();$('#dlg').close();render()};
+  $('#dlg').showModal();
+  const first=fr.querySelector('input,select,textarea');if(first)first.focus();
+}
+
+/* ---------- Incidències ---------- */
+function incForm(code='',inc=null){
+  const act=S.devices.filter(d=>d.rs!=='fet');
+  if(!act.length){toast('Encara no hi ha dispositius a l\u2019inventari');return}
+  const dv=act.slice().sort((a,b)=>a.code.localeCompare(b.code)).map(d=>[d.code,`${d.code} — ${place(d)}`]);
+  const sel=inc?inc.code:(code||dv[0][0]);let nm='';try{nm=localStorage.getItem('ss-nom')||''}catch(e){}
+  form(inc?'Edita la incidència':'Nova incidència',`
+   <label>Dispositiu<select name="code">${opts(dv,sel)}</select></label>
+   <div class="row"><label>Motiu<select name="motiu">${opts(MOT.map(m=>[m,m]),inc?inc.motiu:'Altres')}</select></label>
+   <label>Prioritat<select name="prio">${opts(Object.entries(PR),inc?inc.prio:'mitjana')}</select></label></div>
+   <label>Què passa?<textarea name="desc" rows="3" required placeholder="Ex.: no s\u2019encén, la pantalla no respon…">${h(inc?inc.desc:'')}</textarea></label>
+   <label>Qui ho comunica<input name="who" value="${h(inc?inc.who:nm)}" placeholder="Nom o curs"></label>`,
+   d=>{if(!d.desc.trim())return'Descriu la incidència.';
+     if(inc){if(inc.motiu!==d.motiu)addLog(inc,`Motiu: ${inc.motiu} → ${d.motiu}`);
+       if(inc.code!==d.code)addLog(inc,`Dispositiu: ${inc.code} → ${d.code}`);
+       Object.assign(inc,{code:d.code,desc:d.desc.trim(),motiu:d.motiu,prio:d.prio,who:d.who.trim()})}
+     else{try{if(d.who.trim())localStorage.setItem('ss-nom',d.who.trim())}catch(e){}
+       const n={id:uid(),code:d.code,desc:d.desc.trim(),motiu:d.motiu,prio:d.prio,st:'oberta',date:today(),who:d.who.trim(),cm:[]};
+       addLog(n,'Incidència creada',d.who.trim()||'Docent');S.incidents.unshift(n)}
+     toast(inc?'Incidència desada':'Incidència creada')});
+}
+const MMOT=['No puc entrar','He oblidat la contrasenya','Compte bloquejat','Correu ple o no rep','Alta o baixa de compte','Altres'];
+function mailForm(inc=null){
+  const m=(inc&&inc.mail)||{};let nm='';try{nm=localStorage.getItem('ss-nom')||''}catch(e){}
+  form(inc?'Edita la incidència de correu':'Incidència de correu del centre',`
+   <div class="row"><label>Nom<input name="nom" required value="${h(m.nom||'')}" autocomplete="given-name"></label>
+   <label>Cognoms<input name="cog" required value="${h(m.cog||'')}" autocomplete="family-name"></label></div>
+   <label>Correu del centre<input name="email" type="email" required value="${h(m.email||'')}" placeholder="nom.cognom@escola.cat" autocapitalize="none"></label>
+   <div class="row"><label>Motiu<select name="motiu">${opts(MMOT.map(x=>[x,x]),inc?inc.motiu:'No puc entrar')}</select></label>
+   <label>Prioritat<select name="prio">${opts(Object.entries(PR),inc?inc.prio:'mitjana')}</select></label></div>
+   <label>Comentari<textarea name="desc" rows="3" placeholder="Explica breument què passa…">${h(inc?inc.desc:'')}</textarea></label>
+   <label>Contrasenya (opcional)<input name="pass" type="password" autocomplete="off" value="${h(m.pass||'')}" placeholder="Només si és imprescindible"></label>
+   <p class="meta" style="margin:0">🔒 Millor no la indiquis: les TIC en restabliran una de nova. Si la poses, només la veu el personal TIC.</p>
+   <label>Qui ho comunica<input name="who" value="${h(inc?inc.who:nm)}" placeholder="Nom o curs"></label>`,
+   d=>{const em=d.email.trim();if(!/^\S+@\S+\.\S+$/.test(em))return'Escriu un correu vàlid.';
+     const mail={nom:d.nom.trim(),cog:d.cog.trim(),email:em,pass:d.pass||''};const desc=d.desc.trim()||'Sense comentari';
+     if(inc){if(inc.motiu!==d.motiu)addLog(inc,`Motiu: ${inc.motiu} → ${d.motiu}`);Object.assign(inc,{desc,motiu:d.motiu,prio:d.prio,who:d.who.trim(),mail})}
+     else{try{if(d.who.trim())localStorage.setItem('ss-nom',d.who.trim())}catch(e){}
+       const n={id:uid(),kind:'mail',code:'✉ Correu',desc,motiu:d.motiu,prio:d.prio,st:'oberta',date:today(),who:d.who.trim(),mail,cm:[]};
+       addLog(n,'Incidència creada',d.who.trim()||'Docent');S.incidents.unshift(n)}
+     toast(inc?'Incidència desada':'Incidència creada')});
+}
+function mailInfo(i){const m=i.mail;if(!m)return'';
+  return `<div class="meta"><b>${h(m.nom)} ${h(m.cog)}</b> · ${h(m.email)}${m.pass?(isTic?` · Contrasenya: <span data-pw="${i.id}" data-v="${h(m.pass)}">••••••</span> <button class="btn s" data-showpw="${i.id}">Mostra</button>`:' · Contrasenya indicada: ••••••'):''}</div>`}
+function incCard(i){
+  const d=devOf(i.code),cm=i.cm||[];
+  return `<article class="inc ${i.prio} ${i.st}">
+  <div class="top"><span class="code">${h(i.code)}</span>${(i.tagTxt||i.kind==='mail')?`<span class="tag">${h(i.tagTxt||'Correu del centre')}</span>`:d&&d.rs==='fet'?`<span class="tag w">Desactivat → ${h(d.rep)}</span>`:`<span class="tag g">${h(place(d))}</span>`}<span class="tag st-${i.st}">${ST[i.st]}</span><span class="tag g">Prioritat ${PR[i.prio].toLowerCase()}</span></div>
+  <p class="desc">${h(i.desc)}</p>${mailInfo(i)}${visitInfo(i)}${(i.det&&i.det.length)?`<div class="meta">${i.det.map(x=>`<span><b>${h(x[0])}:</b> ${h(x[1])}</span>`).join(' · ')}</div>`:''}
+  <div class="meta">${i.date.split('-').reverse().join('/')}${i.who?' · '+h(i.who):''} · Motiu: ${isTic?`<select class="mini" data-mo="${i.id}">${opts(MOT.map(m=>[m,m]),i.motiu)}</select>`:h(i.motiu)}</div>
+  <details class="cm" data-d="${i.id}"${openC.has(i.id)?' open':''}><summary>Comentaris i historial (${cm.length})</summary>
+  ${cm.map(c=>`<div class="c${c.sys?' sys':''}"><b>${h(c.who)}</b> <span>${fmt(c.ts)}</span><br>${h(c.text)}</div>`).join('')}
+  <div class="cmf"><input data-ci="${i.id}" placeholder="Afegeix un comentari…" maxlength="400"><button class="btn s" data-cb="${i.id}">Envia</button></div></details>
+  ${isTic?`<div class="acts">${i.st!=='curs'?`<button class="btn s" data-do="curs" data-id="${i.id}">Marca en curs</button>`:''}
+  ${i.st!=='resolta'?`<button class="btn s p" data-do="resolta" data-id="${i.id}">Resolta</button>`:`<button class="btn s" data-do="oberta" data-id="${i.id}">Reobre</button>`}
+  ${i.circuit==='presencial'&&i.st!=='resolta'?`<button class="btn s" data-do="visit" data-id="${i.id}">📅 Canvia data</button>`:''}<button class="btn s" data-do="edit" data-id="${i.id}">Edita</button><button class="btn s d" data-do="del" data-id="${i.id}">Elimina</button></div>`:''}</article>`;
+}
+const myName=()=>{let n='';try{n=localStorage.getItem('ss-nom')||''}catch(e){}return n.trim().toLowerCase()};
+const mine=i=>isTic||f.q||(myName()&&(i.who||'').trim().toLowerCase()===myName());
+function renderInc(){
+  const base=S.incidents.filter(i=>isTic||(myName()&&(i.who||'').trim().toLowerCase()===myName()));
+  const n=k=>base.filter(i=>i.st===k).length;
+  let L=S.incidents.filter(i=>{
+    if(!mine(i))return false;
+    if(f.st==='actives'&&i.st==='resolta')return false;
+    if(['oberta','curs','resolta'].includes(f.st)&&i.st!==f.st)return false;
+    const d=devOf(i.code);
+    if(f.cart&&(!d||d.cartId!==f.cart))return false;
+    return !f.q||match([i.code,i.desc,i.who,i.mail?[i.mail.nom,i.mail.cog,i.mail.email].join(' '):'',(i.det||[]).map(x=>x[1]).join(' '),i.motiu,ST[i.st],PR[i.prio],dtext(d),(i.cm||[]).map(c=>c.text).join(' ')].join(' ').toLowerCase(),f.q)});
+  const ord={alta:0,mitjana:1,baixa:2};
+  L.sort((a,b)=>(a.st==='resolta')-(b.st==='resolta')||ord[a.prio]-ord[b.prio]||b.date.localeCompare(a.date));
+  if(!isTic){const rn=nm0();return `<div class="hero"><h2>${rn?'Hola, '+h(rn)+' 👋':'Hola 👋'}</h2><p>Si alguna cosa de tecnologia no funciona, avisa\u2019ns. Només són unes preguntes senzilles.</p><button class="bigbtn" id="heroNew">🚨 Avisar d\u2019una incidència</button>${rn?`<a href="#" id="chName">No sóc ${h(rn)}</a>`:''}</div><h3 class="lt">${f.q?'Resultats de la cerca':'Les meves incidències'}</h3><div class="list">${L.map(incCard).join('')||`<div class="empty">${f.q?'Cap resultat.':'Encara no has avisat de res. 🎉'}</div>`}</div>`}
+  const stat=(k,l,v)=>`<button class="stat${f.st===k?' on':''}" data-st="${k}"><b>${v}</b><span>${l}</span></button>`;
+  return `<div class="stats">${stat('actives','Actives',n('oberta')+n('curs'))}${stat('oberta','Obertes',n('oberta'))}${stat('curs','En curs',n('curs'))}${stat('resolta','Resoltes',n('resolta'))}${stat('tots','Totes',base.length)}</div>
+  ${isTic||f.q?'':`<div class="note">${myName()?'Aquí veus només les incidències que has notificat tu. Per veure les de la resta, fes servir el <b>cercador</b> o consulta l\u2019<b>Inventari</b>.':'Encara no has notificat cap incidència. Quan en notifiquis una, apareixerà aquí amb el teu nom.'}</div>`}
+  <div class="bar"><select id="fc"><option value="">Tots els carros</option>${opts(S.carts.map(c=>[c.id,c.name]),f.cart)}</select></div>
+  <div class="list">${L.map(incCard).join('')||`<div class="empty">${isTic||f.q||myName()?'Cap incidència amb aquests filtres.':'Cap incidència teva de moment. Prem «+ Nova incidència» si un equip falla.'}</div>`}</div>`;
+}
+function bindInc(){
+  document.querySelectorAll('[data-showpw]').forEach(b=>b.onclick=()=>{const sp=document.querySelector(`[data-pw="${b.dataset.showpw}"]`),on=b.textContent==='Amaga';sp.textContent=on?'••••••':sp.dataset.v;b.textContent=on?'Mostra':'Amaga'});
+  document.querySelectorAll('.stat').forEach(b=>b.onclick=()=>{f.st=b.dataset.st;render()});
+  const fcE=$('#fc');if(fcE)fcE.onchange=e=>{f.cart=e.target.value;render()};
+  const hb=$('#heroNew');if(hb)hb.onclick=()=>wiz();const cn=$('#chName');if(cn)cn.onclick=e=>{e.preventDefault();try{localStorage.removeItem('ss-nom')}catch(x){}render()};
+  document.querySelectorAll('details.cm').forEach(el=>el.ontoggle=()=>el.open?openC.add(el.dataset.d):openC.delete(el.dataset.d));
+  const send=id=>{const inp=document.querySelector(`[data-ci="${id}"]`),t=inp.value.trim();if(!t)return;
+    const w=who();if(!w)return;addLog(S.incidents.find(x=>x.id===id),t,w,false);openC.add(id);save();render()};
+  document.querySelectorAll('[data-cb]').forEach(b=>b.onclick=()=>send(b.dataset.cb));
+  document.querySelectorAll('[data-ci]').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')send(i.dataset.ci)});
+  document.querySelectorAll('[data-mo]').forEach(s=>s.onchange=()=>{const i=S.incidents.find(x=>x.id===s.dataset.mo);
+    addLog(i,`Motiu: ${i.motiu} → ${s.value}`);i.motiu=s.value;save();render();toast('Motiu actualitzat')});
+  document.querySelectorAll('[data-do]').forEach(b=>b.onclick=()=>{
+    const i=S.incidents.find(x=>x.id===b.dataset.id),a=b.dataset.do;
+    if(a==='edit')return i.kind==='mail'?mailForm(i):(i.kind?simpleEdit(i):incForm('',i));
+    if(a==='visit')return visitForm(i);
+    if(a==='del'){if(confirm('Vols eliminar aquesta incidència?')){S.incidents=S.incidents.filter(x=>x!==i);save();render()}return}
+    addLog(i,`Estat: ${ST[i.st]} → ${ST[a]}`);i.st=a;save();render();toast('Estat actualitzat')});
+}
+
+/* ---------- Inventari ---------- */
+function devForm(dev=null,pre={}){
+  const cur=dev||pre,cs=S.carts.map(c=>[c.id,`${c.name} (${c.loc||'sense ubicació'})`]);
+  const known=[...new Set([...S.carts.map(c=>c.loc),...S.devices.map(d=>d.loc)].filter(Boolean))];
+  const m0=cur.cartId?'cart':(cur.mode||(cur.loc?'fix':(dev?'loose':(cs.length?'cart':'fix'))));
+  form(dev?'Edita el dispositiu':'Nou dispositiu',`
+   <div class="row"><label>Codi únic<input name="code" required value="${h(cur.code||'')}" placeholder="Ex.: CHB-001"></label>
+   <label>Tipus<select name="type">${opts(TYPES.map(t=>[t,t]),cur.type||'Chromebook')}</select></label></div>
+   <label>On és l\u2019equip?<select name="mode" id="dm">${opts([['cart','🛒 En un carro'],['fix','🖥 Fix en una aula (sobretaula, mestre…)'],['loose','📦 Solt, sense lloc fix']],m0)}</select></label>
+   <div class="row pm pm-cart"><label>Carro<select name="cartId">${opts(cs,cur.cartId||'')}</select></label>
+   <label>Número de llista<input name="num" type="number" min="1" value="${h(cur.num||'')}" placeholder="Posició al carro"></label></div>
+   <div class="row pm pm-fix"><label>Aula o espai<input name="loc" list="dll" autocomplete="off" value="${h(cur.loc||'')}" placeholder="Ex.: 4t A"></label>
+   <label>Lloc concret<input name="spot" value="${h(cur.spot||'')}" placeholder="Ex.: taula del mestre"></label></div>
+   <div class="pm pm-loose"><label>Última ubicació o qui el té (opcional)<input name="loc2" list="dll" autocomplete="off" value="${h(m0==='loose'?(cur.loc||''):'')}" placeholder="Ex.: Secretaria, préstec a la Marta"></label></div>
+   <datalist id="dll">${known.map(x=>`<option value="${h(x)}">`).join('')}</datalist>
+   <label>Notes<input name="notes" value="${h(cur.notes||'')}" placeholder="Opcional"></label>`,
+   d=>{const code=d.code.trim().toUpperCase().replace(/[\s\/]+/g,'-');
+     if(!code)return'Cal un codi.';
+     if(S.devices.some(x=>x!==dev&&x.code===code))return`El codi ${code} ja existeix.`;
+     let num='',cartId='',loc='',spot='';
+     if(d.mode==='cart'){
+       if(!d.cartId)return'Tria un carro o canvia la ubicació a «Fix» o «Solt».';
+       const c=cartOf(d.cartId);num=parseInt(d.num,10);cartId=d.cartId;
+       if(!num||num<1)return'Indica el número de llista al carro.';
+       if(num>c.cap)return`${c.name} només té ${c.cap} places.`;
+       const o=S.devices.find(x=>x!==dev&&x.cartId===d.cartId&&x.num===num);
+       if(o)return`La posició ${num} de ${c.name} ja la té ${o.code}.`}
+     else if(d.mode==='fix'){loc=d.loc.trim();spot=d.spot.trim();if(!loc)return'Indica l\u2019aula o espai on és.'}
+     else loc=(d.loc2||'').trim();
+     const obj={code,type:d.type,cartId,num,mode:d.mode,loc,spot,notes:d.notes.trim()};
+     if(dev){S.incidents.forEach(i=>{if(i.code===dev.code)i.code=code});Object.assign(dev,obj)}
+     else S.devices.push({...obj,rs:'',rep:'',repOf:''});
+     toast('Dispositiu desat')});
+  const dm=$('#dm'),sync=()=>document.querySelectorAll('.pm').forEach(e=>{e.style.display=e.classList.contains('pm-'+dm.value)?'':'none'});dm.onchange=sync;sync();
+}
+function renderInv(){
+  const L=S.devices.filter(d=>{
+    const ds=f.ds==='act'?(d.rs!=='fet'||f.q):true;
+    return ds&&(!f.cart||(f.cart==='-'?!d.cartId:f.cart==='-fix'?modeOf(d)==='fix':f.cart==='-loose'?modeOf(d)==='loose':d.cartId===f.cart))&&(!f.type||d.type===f.type)&&(!f.q||match(dtext(d),f.q))})
+   .sort((a,b)=>(a.rs==='fet')-(b.rs==='fet')||['cart','fix','loose'].indexOf(modeOf(a))-['cart','fix','loose'].indexOf(modeOf(b))||(cartOf(a.cartId)?.name||a.loc||'~').localeCompare(cartOf(b.cartId)?.name||b.loc||'~')||(a.num||0)-(b.num||0)||a.code.localeCompare(b.code));
+  const all=L.length&&L.every(d=>sel.has(d.code));
+  return `<div class="bar"><select id="fc"><option value="">Totes les ubicacions</option><option value="-fix"${f.cart==='-fix'?' selected':''}>🖥 Fixos en aula</option><option value="-loose"${f.cart==='-loose'?' selected':''}>📦 Solts</option>${opts(S.carts.map(c=>[c.id,'🛒 '+c.name]),f.cart)}</select>
+  <select id="ft"><option value="">Tots els tipus</option>${opts(TYPES.map(t=>[t,t]),f.type)}</select>
+  <select id="fd">${opts([['act','Actius'],['tots','Tots']],f.ds)}</select><div class="sp"></div>
+  ${isTic?`${sel.size?`<button class="btn" id="clr">Treu selecció</button>`:''}<button class="btn${sel.size?' p':''}" id="pdf"${sel.size?'':' disabled'}>Etiquetes PDF (${sel.size})</button><button class="btn p" id="addDev">+ Nou dispositiu</button>`:''}</div>
+  ${L.length?`<div class="tw"><table><thead><tr>${isTic?`<th><input type="checkbox" id="all" aria-label="Selecciona tots"${all?' checked':''}></th>`:''}<th>Codi</th><th>Tipus</th><th>Ubicació</th><th>Estat</th><th>Notes</th><th></th></tr></thead><tbody>
+  ${L.map(d=>{const o=openCount(d.code),c=cartOf(d.cartId),off=d.rs==='fet';
+   const est=off?`<span class="dot off"></span>Desactivat → <b>${h(d.rep)}</b>`:`<span class="dot${o?' bad':''}"></span>${o?o+(o>1?' incidències':' incidència'):'Correcte'}`;
+   return `<tr class="${off?'off':''}">${isTic?`<td><input type="checkbox" data-sel="${h(d.code)}"${sel.has(d.code)?' checked':''} aria-label="Selecciona ${h(d.code)}"></td>`:''}<td><b>${h(d.code)}</b></td><td>${d.type}</td><td>${MIC[modeOf(d)]} ${h(place(d))}</td>
+   <td>${est}</td><td>${h(d.notes)}</td><td>${off?'':`<button class="btn s" data-inc="${h(d.code)}">${isTic?'Incidència':'Notifica incidència'}</button>`}
+   ${isTic?` <button class="btn s" data-ed="${h(d.code)}">Edita</button> <button class="btn s d" data-rm="${h(d.code)}">Elimina</button>`:''}</td></tr>`}).join('')}</tbody></table></div>`
+  :`<div class="empty">Cap dispositiu trobat.${isTic?`<br><button class="btn p" id="demo" style="margin-top:10px">Carrega dades d\u2019exemple</button>`:''}</div>`}`;
+}
+function bindInv(){
+  $('#fc').onchange=e=>{f.cart=e.target.value;render()};
+  $('#ft').onchange=e=>{f.type=e.target.value;render()};
+  $('#fd').onchange=e=>{f.ds=e.target.value;render()};
+  document.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>wiz({cat:'equip',dev:b.dataset.inc}));
+  if(!isTic){return}
+  const vis=()=>[...document.querySelectorAll('[data-sel]')].map(x=>x.dataset.sel);
+  if($('#addDev'))$('#addDev').onclick=()=>devForm();
+  if($('#demo'))$('#demo').onclick=()=>{S=seed();save();render()};
+  if($('#clr'))$('#clr').onclick=()=>{sel.clear();render()};
+  if($('#pdf'))$('#pdf').onclick=()=>pdf([...sel].filter(c=>devOf(c)).sort());
+  if($('#all'))$('#all').onchange=e=>{vis().forEach(c=>e.target.checked?sel.add(c):sel.delete(c));render()};
+  document.querySelectorAll('[data-sel]').forEach(b=>b.onchange=()=>{b.checked?sel.add(b.dataset.sel):sel.delete(b.dataset.sel);render()});
+  document.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>devForm(devOf(b.dataset.ed)));
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const d=devOf(b.dataset.rm);
+    if(confirm(`Eliminar ${d.code}?`)){S.devices=S.devices.filter(x=>x!==d);sel.delete(d.code);save();render()}});
+}
+
+/* ---------- Etiquetes PDF ---------- */
+function pdf(codes){
+  if(!codes.length)return;
+  if(!window.jspdf){toast('No s\u2019ha pogut carregar el generador de PDF');return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=50,H=22,per=48,hl=LOGO.startsWith('data:');
+  const ord=['cart','fix','loose'];codes=codes.slice().sort((p,q)=>{const a=devOf(p),b=devOf(q);return ord.indexOf(modeOf(a))-ord.indexOf(modeOf(b))||(cartOf(a.cartId)?.name||a.loc||'~').localeCompare(cartOf(b.cartId)?.name||b.loc||'~')||(a.num||0)-(b.num||0)||a.code.localeCompare(b.code)});
+  codes.forEach((code,i)=>{
+    if(i&&i%per===0)doc.addPage();
+    const k=i%per,x=5+(k%4)*W,y=10+Math.floor(k/4)*H,d=devOf(code),c=cartOf(d.cartId),tx=hl?x+13:x+3;
+    doc.setDrawColor(190);doc.setLineDashPattern([1,1],0);doc.rect(x+.5,y+.5,W-1,H-1);doc.setLineDashPattern([],0);
+    if(hl)doc.addImage(LOGO,'JPEG',x+2.5,y+2.5,9,6.75);
+    doc.setTextColor(20,33,61);doc.setFont('helvetica','normal');doc.setFontSize(5.5);doc.text('Escola Sant Salvador',tx,y+5);
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text(d.code,tx,y+10.5);
+    const md=modeOf(d),l2=c?`${c.name} · núm. ${d.num}`:md==='fix'?(d.loc||'Aula'):(d.loc||'Sense ubicació fixa'),l3=c?`${d.type}${c.loc?' · '+c.loc:''}`:`${d.type}${md==='fix'&&d.spot?' · '+d.spot:md==='loose'?' · solt':''}`;
+    doc.setFontSize(l2.length>22?6.5:8);doc.text(l2.slice(0,34),x+3,y+16);
+    doc.setFont('helvetica','normal');doc.setFontSize(6);doc.text(l3.slice(0,44),x+3,y+19.5);
+  });
+  const blob=doc.output('blob'),name='etiquetes-sant-salvador.pdf';
+  try{doc.save(name)}catch(e){toast('No se pudo descargar el PDF')}
+}
+
+/* ---------- Carros ---------- */
+function cartForm(c=null){
+  form(c?'Configura el carro':'Nou carro',`
+   <label>Nom<input name="name" required value="${h(c?c.name:'')}" placeholder="Ex.: Carro 3"></label>
+   <label>Ubicació<input name="loc" value="${h(c?c.loc:'')}" placeholder="Ex.: Passadís de primària"></label>
+   <div class="row"><label>Places<input name="cap" type="number" min="1" max="60" required value="${c?c.cap:16}"></label>
+   <label>Contingut<input name="note" value="${h(c?c.note:'')}" placeholder="Ex.: Chromebooks"></label></div>`,
+   d=>{const cap=parseInt(d.cap,10),name=d.name.trim();
+     if(!name)return'Cal un nom.';
+     if(!cap||cap<1)return'Indica el nombre de places.';
+     if(S.carts.some(x=>x!==c&&x.name.toLowerCase()===name.toLowerCase()))return'Ja hi ha un carro amb aquest nom.';
+     if(c){const mx=Math.max(0,...S.devices.filter(x=>x.cartId===c.id).map(x=>x.num));
+       if(cap<mx)return`Hi ha un dispositiu a la posició ${mx}. Mou-lo abans de reduir les places.`;
+       Object.assign(c,{name,loc:d.loc.trim(),cap,note:d.note.trim()})}
+     else S.carts.push({id:uid(),name,loc:d.loc.trim(),cap,note:d.note.trim()});
+     toast('Carro desat')});
+}
+function renderCarts(){
+  const cs=S.carts.filter(c=>!f.q||match((c.name+' '+c.loc+' '+c.note).toLowerCase(),f.q)||S.devices.some(d=>d.cartId===c.id&&match(dtext(d),f.q)));
+  return `<div class="bar"><span class="meta">${isTic?'Toca una posició buida per afegir-hi un dispositiu, o una d\u2019ocupada per registrar una incidència.':'Toca un equip per notificar-ne una incidència. Verd: correcte · vermell: amb incidència'}</span><div class="sp"></div>${isTic?'<button class="btn p" id="addCart">+ Nou carro</button>':''}</div>
+  <div class="carts">${cs.map(c=>{const ds=S.devices.filter(d=>d.cartId===c.id);
+   let sl='';for(let n=1;n<=c.cap;n++){const d=ds.find(x=>x.num===n);
+     sl+=d?`<button class="slot f${openCount(d.code)?' x':''}${f.q&&match(dtext(d),f.q)?' hit':''}" data-sd="${h(d.code)}" title="${h(d.code)}">${n}</button>`:`<button class="slot" data-se="${c.id}" data-n="${n}" title="Posició lliure">${n}</button>`}
+   const bad=ds.filter(d=>openCount(d.code)).length;
+   return `<section class="cart"><h3>${h(c.name)}</h3><div class="meta">${h(c.loc||'Sense ubicació')}${c.note?' · '+h(c.note):''}</div>
+   <div class="slots">${sl}</div><div class="leg">${ds.length}/${c.cap} places ocupades · ${bad?bad+' amb incidència':'tot correcte'}</div>
+   ${isTic?`<div class="acts" style="margin-top:10px"><button class="btn s" data-lb="${c.id}">Etiquetes PDF</button><button class="btn s" data-ec="${c.id}">Configura</button><button class="btn s d" data-dc="${c.id}">Elimina</button></div>`:''}</section>`}).join('')||`<div class="empty">Cap carro trobat.</div>`}</div>`;
+}
+function bindCarts(){
+  document.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>wiz({cat:'equip',dev:b.dataset.sd}));
+  if(!isTic)return;
+  $('#addCart').onclick=()=>cartForm();
+  document.querySelectorAll('[data-ec]').forEach(b=>b.onclick=()=>cartForm(cartOf(b.dataset.ec)));
+  document.querySelectorAll('[data-lb]').forEach(b=>b.onclick=()=>pdf(S.devices.filter(d=>d.cartId===b.dataset.lb).sort((a,b)=>a.num-b.num).map(d=>d.code)));
+  document.querySelectorAll('[data-dc]').forEach(b=>b.onclick=()=>{const c=cartOf(b.dataset.dc),n=S.devices.filter(d=>d.cartId===c.id).length;
+    if(confirm(`Eliminar ${c.name}?${n?` Els ${n} dispositius quedaran «sense carro».`:''}`)){
+      S.devices.forEach(d=>{if(d.cartId===c.id){d.cartId='';d.num=''}});S.carts=S.carts.filter(x=>x!==c);save();render()}});
+  document.querySelectorAll('[data-se]').forEach(b=>b.onclick=()=>devForm(null,{cartId:b.dataset.se,num:b.dataset.n}));
+}
+
+/* ---------- Mode i render ---------- */
+function setTic(v){if(!v&&DB)apiRequest('/api/auth',{action:'logout'}).catch(()=>{});isTic=v;if(!v)sel.clear();render()}
+async function manageUsers(){
+  try{
+    const result=await apiRequest('/api/auth',{action:'list'}),users=result.users||[];
+    const fr=$('#frm');
+    fr.innerHTML=`<h2>Usuarios TIC</h2><div>${users.map(u=>`<div class="c"><b>${h(u.username)}</b> · ${h(u.name||u.username)} <span class="meta">${u.role==='admin'?'Administrador':'TIC'}</span></div>`).join('')||'<p class="meta">Todavía no hay usuarios.</p>'}</div><div class="fb"><button type="button" class="btn" id="usersClose">Cerrar</button><button type="button" class="btn p" id="userAdd">Crear usuario</button></div>`;
+    $('#usersClose').onclick=()=>$('#dlg').close();
+    $('#userAdd').onclick=()=>form('Crear usuario TIC',`<label>Usuario<input name="username" required minlength="3" maxlength="32" autocapitalize="none" autocomplete="off" placeholder="ej. mgarcia"></label><label>Nombre visible<input name="name" maxlength="60" placeholder="Nombre y apellidos"></label><label>Contraseña<input name="password" type="password" required minlength="8" autocomplete="new-password"></label>`,async d=>{try{await apiRequest('/api/auth',{action:'create',username:d.username,name:d.name,password:d.password,role:'tic'});toast('Usuario TIC creado')}catch(e){return e.message}},'Crear usuario');
+    $('#dlg').showModal();
+  }catch(e){toast(e.message||'No se pudieron cargar los usuarios')}
+}
+$('#modeBtn').onclick=()=>{
+  if(isTic)return form('Opciones TIC',`<p class="meta" style="margin:0">Sesión: ${h(cfg.user)}. Puedes cambiar la contraseña o volver a la vista docente.</p>${cfg.role==='admin'?'<button type="button" class="btn" id="usersBtn">Gestionar usuarios</button>':''}<label>Contraseña actual<input name="current" type="password" required autocomplete="current-password"></label><label>Nueva contraseña (mínimo 8 caracteres, opcional)<input name="pass" type="password" placeholder="Déjalo vacío para no cambiarla" autocomplete="new-password"></label><label>Logo de la escuela (imagen)<input type="file" id="logoF" accept="image/*"></label>`,
+    async d=>{if(d.pass.trim()){try{await apiRequest('/api/auth',{action:'password',current:d.current,password:d.pass})}catch(e){return e.message}}save();toast('Opciones actualizadas')},'Guardar')||($('#frm').querySelector('.fb').insertAdjacentHTML('afterbegin','<button type="button" class="btn" id="out">Salir del modo TIC</button>'),$('#out').onclick=()=>{$('#dlg').close();setTic(false)},$('#logoF').onchange=setLogoFile,$('#usersBtn')&&($('#usersBtn').onclick=manageUsers));
+  form('Acceso TIC',`<p class="meta" style="margin:0">Solo para el personal TIC. El profesorado puede notificar incidencias directamente.</p><p class="meta" style="margin:0">Cuenta inicial: <b>tic</b> / <b>1234</b>. Cambia la contraseña al entrar.</p><label>Usuario<input name="user" required autocomplete="username" autocapitalize="none"></label><label>Contraseña<input name="pass" id="pw" type="password" required autocomplete="current-password"></label><label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" id="showpw" style="padding:0"> Mostrar contraseña</label>`,
+    async d=>{try{const result=await apiRequest('/api/auth',{action:'login',username:d.user,password:d.pass});cfg.user=result.me.username;cfg.role=result.me.role;setTic(true)}catch(e){return e.message}},'Entrar');
+  const sp=$('#showpw');if(sp)sp.onchange=()=>{$('#pw').type=sp.checked?'text':'password'};
+};
+$('#newInc').onclick=()=>wiz();
+$('#gq').oninput=e=>{f.q=e.target.value.trim();render()};
+function helpHtml(){
+  const I=(ill,txt,title,wide)=>`<div class="hi"${wide?' style="grid-column:1/-1"':''}><h4>${title}</h4><div class="ill">${ill}</div><p>${txt}</p></div>`;
+  const o=t=>`<span class="wopt on" style="padding:6px 12px"><b>${t}</b></span>`,o2=t=>`<span class="wopt" style="padding:6px 12px"><b>${t}</b></span>`;
+  const st=(n,t)=>`<span style="display:inline-flex;align-items:center;gap:6px;margin-right:10px"><span class="step">${n}</span>${t}</span>`;
+  const docent=[
+   I(st(1,'<span class="btn p">🚨 Avisar d\u2019una incidència</span>')+st(2,'Respon unes preguntes')+st(3,'Fes les comprovacions')+st(4,'Rep la data de la visita'),'No cal usuari ni contrasenya. Només has de seguir els passos; l\u2019app s\u2019encarrega de la resta.','Com avisar en 4 passos',1),
+   I(o('💻 Ordinador, Chromebook o tauleta')+o2('🏫 Pantalla, projector o robot')+o2('✉ Correu o compte'),'Tria què falla. Segons la resposta, l\u2019app et farà preguntes adaptades: no cal saber de tecnologia.','Què vols comunicar?'),
+   I('<span class="gq" style="width:auto;margin:0;padding:6px 12px;font-size:13px">4t A</span>'+o('No ho sé / no té etiqueta'),'L\u2019aula és obligatòria; l\u2019app recorda l\u2019última que has fet servir. Si l\u2019equip és de l\u2019inventari, tria\u2019l a la llista (hi ha una foto il·lustrativa); si no el coneixes, tria «No ho sé».','Aula i equip'),
+   I(o2('Sí, continua sense funcionar')+o2('No, ara ja funciona'),'Abans d\u2019enviar, prova les comprovacions que et proposem (cables, endoll, reinici…). Si ja funciona, no es crea cap incidència.','Comprovacions'),
+   I(o2('Sí: avui no puc fer la classe')+o2('Em dificulta la feina')+o2('No és urgent'),'Només has de dir si et bloqueja la feina. La prioritat la calcula l\u2019app.','Urgència'),
+   I('<span class="tag">🟠 Assistència presencial</span><span class="tag">🟢 Sense desplaçament</span><span class="tag">📧 Gestió de compte</span>','L\u2019app decideix sola si cal anar a l\u2019aula. Si cal, assigna la primera hora lliure del mateix dia (09:00–13:00 o 14:20–15:40) i l\u2019equip TIC pot canviar-la. Els problemes de compte no porten desplaçament.','Què passarà després?'),
+   I('<span class="tag st-oberta">Oberta</span><span class="tag st-curs">En curs</span><span class="tag st-resolta">Resolta</span>','A «Les meves incidències» veus només les que has avisat tu. Oberta: pendent de revisar · En curs: les TIC hi treballen · Resolta: arreglada.','Estats'),
+   I(o('Sol·licitar canvi de contrasenya')+o2('Restablir la contrasenya inicial'),'Si falla la contrasenya del correu, tria què necessites. 🔒 No escriguis mai contrasenyes a la incidència.','Correu i contrasenya'),
+   I('<span class="gq" style="width:auto;margin:0;padding:6px 12px;font-size:13px">🔍 Cerca…</span>','Escriu una paraula, una aula o un codi per veure també les incidències d\u2019altres docents.','Cercador'),
+   I('<span class="meta">Hola, Maria 👋 · <u>No sóc Maria</u></span>','Només et demanem el nom una vegada. Si comparteixes l\u2019ordinador amb algú altre, prem «No sóc …» per canviar-lo.','El teu nom')];
+  const tic={
+   inc:[I('<span class="stat on" style="padding:6px 10px"><b style="font-size:18px">3</b><span>Obertes</span></span><span class="stat" style="padding:6px 10px"><b style="font-size:18px">1</b><span>Resoltes</span></span>','Toca un quadre per filtrar per estat. El selector de carros filtra per equip.','Comptadors i filtres'),
+     I('<span class="tag st-oberta">Oberta</span><span class="tag st-curs">En curs</span><span class="tag st-resolta">Resolta</span>','La barra de color de cada targeta indica la prioritat: vermell alta, taronja mitjana, blau baixa. L\u2019etiqueta indica el tipus: correu, equip d\u2019aula o equip sense codi.','Estats i prioritat'),
+     I('<span class="btn s">Marca en curs</span><span class="btn s p">Resolta</span><span class="btn s">📅 Canvia data</span><span class="btn s">Edita</span><span class="btn s d">Elimina</span>','«Canvia data» mou la visita presencial (només dins l\u2019horari lectiu i sense repetir hora). Cada canvi queda al registre de comentaris.','Accions TIC'),
+     I('<span class="tag">🟠 Assistència presencial</span><span class="meta">📅 Avui a les 10:30 · 📍 4t A</span>','Les incidències que cal atendre a l\u2019aula surten amb data i lloc. Les de compte i les de programari no porten desplaçament.','Visites')],
+   inv:[I('<span class="btn s">Incidència</span>','Al costat de cada equip: obre una incidència d\u2019aquell dispositiu.','Incidència des de l\u2019equip'),
+     I('<span class="dot"></span>Correcte <span class="dot bad"></span>Incidència','El puntet mostra l\u2019estat de cada dispositiu d\u2019un cop d\u2019ull.','Estat'),
+     I('<span class="tag">🛒 Carro 1 · núm. 4</span><span class="tag">🖥 4t A · taula del mestre</span><span class="tag">📦 Solt</span>','Cada equip pot ser en un carro, fix en una aula (sobretaula, mestre…) o solt, sense lloc fix. Pots filtrar l\u2019inventari per ubicació.','Ubicació dels equips'),
+     I('<span class="btn s">Edita</span><span class="btn p">Etiquetes PDF</span>','Filtra per ubicació, marca els dispositius amb la casella i genera etiquetes compactes (50×22 mm, 48 per full A4). Surten ordenades: primer carros, després fixos i després solts, amb carro i número o aula i lloc.','Etiquetes i edició')],
+   carts:[I('<span class="slot f" style="width:38px">1</span><span class="slot x" style="width:38px">3</span><span class="slot" style="width:38px">4</span>','Cada quadrat és una posició del carro. Verd: correcte · vermell: amb incidència · buit: lliure. Toca una posició buida per afegir-hi un dispositiu.','Colors del carro'),
+     I('<span class="btn p">+ Nou carro</span><span class="btn s">Configura</span>','Crea carros, edita\u2019n el nom i la ubicació (l\u2019aula que es proposa als docents) o genera-hi etiquetes.','Gestió de carros')]};
+  const ticGen=[
+   I('<nav style="margin:0"><button class="on">Incidències<span class="n">3</span></button><button>Inventari</button><button>Carros</button></nav>','Només el personal TIC veu les tres pestanyes. El número indica el que està pendent.','Pestanyes'),
+   I('<span class="btn">Opcions TIC</span>','Des d\u2019aquí canvies l\u2019usuari i la contrasenya TIC, puges el logo de l\u2019escola (els colors de l\u2019app s\u2019hi adapten) o surts del mode TIC. Per entrar, usa «Accés TIC».','Accés i opcions')];
+  const items=isTic?[...(tic[tab]||[]),...ticGen]:docent;
+  return `<summary>❓ Ajuda: què veig a la pantalla i com funciona?</summary><div class="hg">${items.join('')}</div>
+  <p class="meta" style="margin:0 0 14px">${isTic?'Consell: les incidències de compte mai porten visita; per a la resta, revisa les dates programades cada dia.':'Si tens dubtes, avisa l\u2019equip TIC de l\u2019escola. Per a una urgència a l\u2019aula, no cal esperar: obre la incidència i marca «avui no puc fer la classe».'}</p>`}
+document.addEventListener('click',e=>{if(e.target.id==='helpb'){const d=$('#help');d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}});
+/* ---------- Assistent d'incidències ---------- */
+const IMP=[['Sí: avui no puc fer la classe o la tasca prevista','2'],['Em dificulta la feina, però tinc alternativa','1'],['No és urgent','0']];
+const EQP=['No s\u2019encén','No arrenca (es queda a la marca o es reinicia)','Va molt lent o es bloqueja','Pantalla negra, amb ratlles o trencada','No carrega o la bateria dura poc','Teclat, ratolí o touchpad','Sense Wi-Fi o internet','No puc iniciar sessió','Un programa o aplicació falla','No es veu a la pantalla o projector','No imprimeix','Dany físic (caiguda o líquid)','Altres'];
+const PANP=['No s\u2019encén','Sense imatge','El tàctil no respon o va desajustat','Sense so','No es connecta a l\u2019ordinador o al Wi-Fi','Imatge amb ratlles o taques','Va lent o es bloqueja','Pantalla trencada','Altres'];
+const PRJP=['No s\u2019encén','Sense imatge','Imatge borrosa o amb taques','Avís de làmpada o temperatura','Sense so','Altres'];
+const RB=[['Tale-Bot Pro','seq','Infantil i primària'],['Blue-Bot','seq','Infantil i primària'],['Code & Go Mouse','seq','Infantil i primària'],['mTiny','seq','Infantil i primària'],['Codey Rocky','cmp','Primària'],['Edison V2','cmp','Primària'],['Dash','cmp','Primària'],['mBot2 (mBot)','cmp','Primària i secundària'],['LEGO SPIKE Essential','spk','Primària i secundària'],['LEGO SPIKE Prime','spk','Primària i secundària'],['micro:bit','mb','Primària i secundària'],['ED1','mb','Primària i secundària'],['Un altre robot','cmp','']];
+const RBP={seq:['No s\u2019encén o no carrega','No obeeix els botons o les targetes','No es connecta (Bluetooth)','Peça, targeta o accessori perdut o trencat','Altres'],cmp:['No s\u2019encén o no carrega','No es connecta (Bluetooth o app)','No executa el programa','Un sensor o motor no funciona','Altres'],spk:['El hub no s\u2019encén o no carrega','No detecta un motor o sensor','No es connecta a l\u2019app (Bluetooth o USB)','Falten peces','Altres'],mb:['L\u2019ordinador no la detecta','Error en descarregar el programa','Pantalla LED o botons no responen','Piles o alimentació','Altres']};
+[EQP,PANP,PRJP,MMOT,...Object.values(RBP)].forEach(l=>l.forEach(m=>{if(!MOT.includes(m))MOT.push(m)}));
+const C=(key,s,q,o)=>({key,s,q,t:'c',o:o.map(x=>typeof x==='string'?[x,x]:x)});
+const T=(key,s,q,req,area,def,list)=>({key,s,q,t:'t',req,area,def,list});
+const nm0=()=>{try{return(localStorage.getItem('ss-nom')||'').trim()}catch(e){return''}};
+function Q(a){
+  const q=[],devs=S.devices.filter(d=>d.rs!=='fet');let lr='';try{lr=localStorage.getItem('ss-aula')||''}catch(e){}
+  q.push(C('cat','Tipus','Què vols comunicar?',[['💻 Un ordinador, Chromebook o tauleta','equip'],['🏫 Pantalla, projector o robot de l\u2019aula','aula'],['✉ El meu correu o compte del centre','compte']]));
+  if(a.cat==='equip'||a.cat==='aula'){
+    const pd=S.devices.find(x=>x.code===a.dev),pc=pd&&cartOf(pd.cartId);
+    const known=[...new Set([...S.carts.map(c=>c.loc),...S.devices.map(d=>d.loc),...S.incidents.map(i=>i.room)].filter(Boolean))];
+    q.push(T('room','Aula','En quina aula és? (ex.: 4t A)',true,false,(pc&&pc.loc)||(pd&&pd.loc)||lr,known));
+  }
+  const p=a.prob||'';
+  if(a.cat==='equip'){
+    const rl=(a.room||'').trim().toLowerCase(),cl=d=>locOf(d).trim().toLowerCase()===rl&&rl?1:0;
+    const ds=devs.slice().sort((x,y)=>cl(y)-cl(x)||x.code.localeCompare(y.code));
+    if(ds.length)q.push({key:'dev',s:'Equip',q:'Quin equip és?',pic:1,t:'s',o:ds.map(d=>[d.code,`${place(d)} · ${d.type} (${d.code})`]).concat([['','No ho sé / no té etiqueta']])});
+    const unk=a.dev===''||!ds.length;
+    if(unk)q.push(T('devfree','Equip','Quin equip és? (ex.: ordinador de la mestra)',true));
+    q.push(C('prob','Problema','Què li passa?',EQP));
+    q.push(C('when','Què feies','Què estaves fent quan ha passat?',['Engegant-lo','Apagant-lo','Actualitzant el sistema','Instal·lant un programa','Fent servir un programa o web','Connectant-lo (Wi-Fi, projector, impressora)','No ho sé: ja estava així']));
+    if(unk)q.push(C('os','Sistema operatiu','Quin sistema operatiu té?',['Windows','ChromeOS (Chromebook)','Linux (Linkat)','Android','iPadOS (iPad)','No ho sé']));
+  }
+  if(a.cat==='aula'){
+    q.push(C('atype','Equip d\u2019aula','Quin equip és?',[['🖥 Pantalla interactiva','Pantalla interactiva'],['📽 Projector','Projector'],['🤖 Robot o kit de robòtica','Robot'],['Altres','Altres']]));
+    if(a.atype==='Pantalla interactiva')q.push(C('prob','Problema','Què li passa?',PANP));
+    if(a.atype==='Projector')q.push(C('prob','Problema','Què li passa?',PRJP));
+    if(a.atype==='Robot'){
+      q.push(C('rmodel','Model','Quin robot és? (catàleg de robòtica del Departament d\u2019Educació)',RB.map(r=>[r[0],r[0],r[2]])));
+      const g=(RB.find(r=>r[0]===a.rmodel)||[])[1];
+      if(g)q.push(C('prob','Problema','Què li passa?',RBP[g]));
+    }
+  }
+  if(a.cat==='compte'){
+    q.push({key:'ident',s:'Persona',q:'De quin compte parlem?',t:'f',f:[{k:'nom',l:'Nom',req:1},{k:'cog',l:'Cognoms',req:1},{k:'email',l:'Correu del centre',req:1,type:'email'}]});
+    q.push(C('prob','Problema','Què passa?',[['🔑 Falla la contrasenya','pass'],['🔒 El compte està bloquejat','lock'],['📬 Correu ple o no rep/envia','mail'],['➕ Alta, baixa o canvi de compte','alta'],['Altres','altres']]));
+    if(a.prob==='pass')q.push(C('psub','Què necessites','Què necessites?',[['Sol·licitar canvi de contrasenya','Sol·licitar canvi de contrasenya','Les TIC et facilitaran una contrasenya nova'],['Restablir la contrasenya inicial','Restablir la contrasenya inicial','Tornar a la contrasenya del primer dia']]));
+    if(a.prob==='alta')q.push(C('alt','Sol·licitud','Què cal fer?',['Alta (docent nou)','Baixa','Canvi de nom o de correu']));
+  }
+  if(a.cat&&a.cat!=='compte'&&a.prob){const c=C('chk','Comprovacions','Prova això abans d\u2019enviar. Continua sense funcionar?',[['Sí, continua sense funcionar','still'],['No, ara ja funciona','ok']]);c.info=chks(a);q.push(c)}
+  if(a.cat){
+    q.push(C('imp','Urgència','Et bloqueja la feina?',IMP));
+    const req=a.prob==='Altres'||a.atype==='Altres'||a.prob==='altres';
+    q.push(T('desc','Detalls',req?'Explica què passa':'Vols afegir algun detall? (opcional)',req,true));
+    if(!nm0())q.push({key:'whof',s:'Qui',q:'Com et dius?',t:'f',f:[{k:'who',l:'Nom (només cal una vegada)',req:1}]});
+  }
+  return q;
+}
+function calc(a){
+  let sc=(+a.imp||0)*2;const why=[],p=a.prob||'';
+  why.push(a.imp==='2'?'et bloqueja la feina avui':a.imp==='1'?'et dificulta la feina':'no és urgent');
+  if(a.cat==='equip'&&/encén|arrenca|Dany/.test(p)){sc+=1;why.push('l\u2019equip no funciona o està danyat')}
+  if(a.cat==='compte'){if(a.prob==='pass'||a.prob==='lock'){sc+=1;why.push('no pots accedir al compte')}if(a.prob==='alta'||a.prob==='altres')sc-=1}
+  if(a.atype==='Pantalla interactiva'){sc+=1;why.push('és el recurs principal de l\u2019aula')}
+  return [sc>=4?'alta':sc>=2?'mitjana':'baixa',why];
+}
+/* ---------- Circuit presencial i programació ---------- */
+const SL=[[540,780],[860,940]]; /* 09:00-13:00 i 14:20-15:40 */
+const isoD=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const hhmm=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+const slotFree=(d,m)=>!S.incidents.some(i=>i.visit&&i.st!=='resolta'&&i.visit.d===d&&i.visit.m===m);
+function nextSlot(now=new Date()){
+  const d=new Date(now);d.setHours(12,0,0,0);
+  for(let k=0;k<21;k++){
+    const wd=d.getDay(),ds=isoD(d);
+    if(wd!==0&&wd!==6){
+      const start=k===0?now.getHours()*60+now.getMinutes()+1:0;
+      for(const [a,b] of SL){
+        let m=Math.max(a,start);if(m>a)m=Math.ceil(m/30)*30;
+        while(m<b){if(slotFree(ds,m))return{d:ds,m};m=Math.ceil((m+1)/30)*30}
+      }
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return null;
+}
+function slotLabel(v){
+  const t=new Date(),tm=new Date();tm.setDate(t.getDate()+1);
+  const day=v.d===isoD(t)?'Avui':v.d===isoD(tm)?'Demà':new Date(v.d+'T12:00').toLocaleDateString('ca',{weekday:'long',day:'numeric',month:'numeric'});
+  return `${day} a les ${hhmm(v.m)}`;
+}
+function chks(a){
+  const p=a.prob||'';
+  if(a.atype==='Projector')return['Comprova la connexió del cable (HDMI o VGA)','Comprova que està endollat i encès','Comprova l\u2019entrada seleccionada (HDMI, VGA…)'];
+  if(a.atype==='Pantalla interactiva')return['Comprova que està endollada i amb l\u2019interruptor posterior activat','Comprova la font d\u2019entrada seleccionada','Desendolla-la un minut i torna-la a engegar'];
+  if(a.atype==='Robot')return['Carrega\u2019l una estona o canvia\u2019n les piles','Reinicia el robot i l\u2019app o l\u2019editor','Prova amb un altre cable o dispositiu'];
+  if(/encén|carrega/.test(p))return['Prova un altre endoll i un altre carregador','Mantén premut el botó d\u2019encesa 10 segons','Comprova que el carregador està ben connectat a l\u2019equip'];
+  if(/Wi-Fi/.test(p))return['Activa i desactiva el Wi-Fi','Comprova que et connectes a la xarxa del centre','Reinicia l\u2019equip'];
+  if(/sessió/.test(p))return['Comprova que escrius bé el correu i que no tens les majúscules activades','Reinicia l\u2019equip','Prova-ho en un altre equip'];
+  return['Tanca tots els programes i reinicia l\u2019equip','Comprova que està connectat al carregador','Comprova cables i connexions'];
+}
+function route(a){
+  if(a.cat==='compte')return{c:'compte',why:'És una gestió de compte o servei: no cal desplaçament presencial.'};
+  const p=a.prob||'';
+  const rem=/sessió|programa|lent|descarregar|app|Bluetooth/i.test(p)&&a.atype!=='Pantalla interactiva'&&a.atype!=='Projector';
+  return rem?{c:'remot',why:'Sembla un problema de programari o de connexió que es pot resoldre sense anar a l\u2019aula.'}:{c:'presencial',why:'Després de les comprovacions segueix fallant i sembla un problema de maquinari o d\u2019instal·lació.'};
+}
+function roomOf(a){return(a.room||'').trim()}
+function visitForm(i){
+  const v=i.visit||nextSlot()||{d:isoD(new Date()),m:540};
+  form('Canvia la data de l\u2019assistència',`<p class="meta" style="margin:0">Horari: 09:00–13:00 i 14:20–15:40. 📍 ${h((i.visit&&i.visit.room)||i.room||'aula per confirmar')}</p><div class="row"><label>Dia<input name="date" type="date" required value="${v.d}"></label><label>Hora<input name="time" type="time" step="600" required value="${hhmm(v.m)}"></label></div>`,
+  d=>{const[hh,mm]=d.time.split(':').map(Number),m=hh*60+mm;
+    if(!SL.some(([a,b])=>m>=a&&m<b))return'Fora de l\u2019horari (09:00–13:00 o 14:20–15:40).';
+    const wd=new Date(d.date+'T12:00').getDay();if(wd===0||wd===6)return'Tria un dia lectiu (de dilluns a divendres).';
+    if(!(i.visit&&i.visit.d===d.date&&i.visit.m===m)&&!slotFree(d.date,m))return'Aquesta hora ja està assignada a una altra visita.';
+    const old=i.visit?slotLabel(i.visit):'sense data';i.visit={d:d.date,m,room:(i.visit&&i.visit.room)||i.room||''};
+    addLog(i,`Visita: ${old} → ${slotLabel(i.visit)}`);toast('Data actualitzada')},'Desa la data');
+}
+function visitInfo(i){
+  if(i.circuit==='presencial'&&i.visit&&i.st!=='resolta')return `<div class="meta">🟠 <b>Assistència presencial</b> · 📅 ${h(slotLabel(i.visit))}${i.visit.room?' · 📍 '+h(i.visit.room):''}</div>`;
+  if(i.circuit==='compte')return '<div class="meta">📧 Gestió de compte · sense desplaçament</div>';
+  if(i.circuit==='remot')return '<div class="meta">🟢 Es pot resoldre sense desplaçament</div>';
+  return '';
+}
+function wiz(pre={}){
+  const a=Object.assign({__:{}},pre),st={i:0},fr=$('#frm');
+  const Ls=()=>Q(a).filter(q=>!(q.key in pre));
+  const bar=(n,t)=>`<div class="prog"><i style="width:${Math.round(n/t*100)}%"></i></div>`;
+  const foot=(back,next)=>`<p class="err" id="err"></p><div class="fb">${back?'<button type="button" class="btn" id="wb">← Enrere</button>':''}<button type="button" class="btn" id="cx">Cancel·la</button>${next?`<button class="btn p">${next}</button>`:''}</div>`;
+  const wire=()=>{$('#cx').onclick=()=>$('#dlg').close();const b=$('#wb');if(b)b.onclick=()=>{st.i=Math.max(0,st.i-1);draw()};const f=fr.querySelector('input,select,textarea');if(f)f.focus()};
+  function draw(){
+    const L=Ls();if(st.i>=L.length)return sum(L);
+    const q=L[st.i],t=L.length+1;let b='';
+    if(q.t==='c')b=`<div class="wopts">${q.o.map((o,k)=>`<button type="button" class="wopt${a[q.key]===o[1]?' on':''}" data-k="${k}"><b>${h(o[0])}</b>${o[2]?`<small>${h(o[2])}</small>`:''}</button>`).join('')}</div>`;
+    else if(q.t==='s')b=`<label><select name="v"><option value="?">— Tria una opció —</option>${q.o.map(o=>`<option value="${h(o[0])}"${a[q.key]===o[0]?' selected':''}>${h(o[1])}</option>`).join('')}</select></label>`;
+    else if(q.t==='t')b=`<label>${q.area?`<textarea name="v" rows="3">${h(a[q.key]||'')}</textarea>`:`<input name="v" autocomplete="off" value="${h(a[q.key]!==undefined?a[q.key]:(q.def||''))}"${q.list?' list="dl"':''}>${q.list?`<datalist id="dl">${q.list.map(x=>`<option value="${h(x)}">`).join('')}</datalist>`:''}`}</label>`;
+    else b=q.f.map(f=>`<label>${h(f.l)}<input name="${f.k}" type="${f.type||'text'}" value="${h(a[f.k]!==undefined?a[f.k]:(f.v||''))}"></label>`).join('');
+    fr.innerHTML=`<h2>Obrir nova incidència</h2>${bar(st.i+1,t)}<p class="meta" style="margin:0">Pas ${st.i+1} de ${t}</p><h3 class="wq">${h(q.q)}</h3>${q.pic?picHtml():''}${q.info?`<div class="sumbox">${q.info.map(x=>`<div>✔ ${h(x)}</div>`).join('')}</div>`:''}${b}${foot(st.i>0,q.t==='c'?'':'Següent →')}`;
+    wire();
+    const pi=fr.querySelector('.pic img');if(pi)pi.onerror=()=>{pi.outerHTML=window.CHB_SVG};
+    fr.querySelectorAll('.wopt').forEach(bt=>bt.onclick=()=>{const o=q.o[bt.dataset.k];if(q.key==='chk'&&o[1]==='ok'){$('#dlg').close();toast('Perfecte! Si torna a fallar, obre una incidència.');return}a[q.key]=o[1];a.__[q.key]=o[0];st.i++;draw()});
+    fr.onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(fr)),er=m=>{$('#err').textContent=m};
+      if(q.t==='s'){if(d.v==='?')return er('Tria una opció.');a[q.key]=d.v;a.__[q.key]=fr.querySelector('select').selectedOptions[0].text}
+      else if(q.t==='t'){const v=(d.v||'').trim();if(q.req&&!v)return er('Aquest camp és obligatori.');a[q.key]=v}
+      else{for(const f of q.f){const v=(d[f.k]||'').trim();if(f.req&&!v)return er(`Falta: ${f.l}.`);if(f.type==='email'&&!/^\S+@\S+\.\S+$/.test(v))return er('Escriu un correu vàlid.');a[f.k]=v}}
+      st.i++;draw()};
+  }
+  function sum(L){
+    const det=[];L.forEach(q=>{if(q.t==='f'||q.key==='cat'||q.key==='dev')return;const v=a.__[q.key]!==undefined?a.__[q.key]:a[q.key];if(v!==''&&v!==undefined)det.push([q.s,v])});
+    const [pr,why]=calc(a),r=route(a),vis=r.c==='presencial'?nextSlot():null;
+    fr.innerHTML=`<h2>Revisa i envia</h2>${bar(1,1)}<div class="sumbox" style="border-left:4px solid var(--acc)"><div><b>${r.c==='presencial'?'🟠 Assistència presencial necessària':r.c==='compte'?'📧 Gestió de compte':'🟢 Es pot resoldre sense desplaçament'}</b></div>${vis?`<div>📅 ${h(slotLabel(vis))} · 📍 ${h(roomOf(a)||'aula per confirmar')}</div>`:''}<div><span>${h(r.why)}</span></div></div><div class="sumbox">${a.cat==='compte'?`<div><b>${h(a.nom+' '+a.cog)}</b> · ${h(a.email)}</div>`:''}${det.map(x=>`<div><span>${h(x[0])}:</span> ${h(x[1])}</div>`).join('')}</div>
+    ${isTic?`<label>Prioritat calculada automàticament<select name="pr">${['alta','mitjana','baixa'].map(k=>`<option value="${k}"${k===pr?' selected':''}>${PR[k]}</option>`).join('')}</select></label><p class="meta" style="margin:0">Per què? ${h(why.join(', '))}.</p>`:''}<p class="meta" style="margin:0">🔒 No escriguis mai contrasenyes a la incidència.</p>${foot(true,'Enviar incidència')}`;
+    wire();
+    fr.onsubmit=e=>{e.preventDefault();const p=isTic?new FormData(fr).get('pr'):pr,who=(a.who||nm0()).trim();
+      try{if(who)localStorage.setItem('ss-nom',who)}catch(x){}
+      const n={id:uid(),st:'oberta',date:today(),who,prio:p,cm:[],det,room:(a.room||'').trim()};try{if(n.room)localStorage.setItem('ss-aula',n.room)}catch(x){}
+      if(a.cat==='equip'){n.code=a.dev||'Equip sense codi';n.motiu=a.prob;n.desc=a.prob+(a.desc?': '+a.desc:'');
+        if(!a.dev){n.kind='nodev';n.tagTxt='Equip sense codi';n.det=[['Equip',a.devfree||'—'],...det]}}
+      else if(a.cat==='aula'){n.kind='aula';n.tagTxt='Equipament d\u2019aula';n.code=`🏫 ${a.rmodel||a.atype}${a.room?' · '+a.room:''}`;n.motiu=a.prob||'Altres';n.desc=(a.prob||a.atype)+(a.desc?': '+a.desc:'')}
+      else{n.kind='mail';n.code='✉ Correu';n.mail={nom:a.nom,cog:a.cog,email:a.email,pass:''};n.motiu=({pass:'Falla la contrasenya',lock:'Compte bloquejat',mail:'Correu ple o no rep/envia',alta:'Alta, baixa o canvi de compte',altres:'Altres'})[a.prob];
+        n.desc=(a.psub||a.alt||n.motiu)+(a.desc?': '+a.desc:'')}
+      const r=route(a);n.circuit=r.c;if(r.c==='presencial'){const v=nextSlot();if(v)n.visit={...v,room:roomOf(a)}}
+      if(!MOT.includes(n.motiu))MOT.push(n.motiu);
+      addLog(n,'Incidència creada',who||'Docent');S.incidents.unshift(n);save();
+      tab='inc';f.st='actives';f.q='';$('#gq').value='';$('#dlg').close();render();toast(n.visit?'Incidència creada · '+slotLabel(n.visit):'Incidència creada · prioritat '+PR[p].toLowerCase())};
+  }
+  draw();if(!$('#dlg').open)$('#dlg').showModal();
+}
+function simpleEdit(i){
+  form('Edita la incidència',`<label>Motiu<select name="motiu">${opts(MOT.map(m=>[m,m]),i.motiu)}</select></label><label>Prioritat<select name="prio">${opts(Object.entries(PR),i.prio)}</select></label><label>Descripció<textarea name="desc" rows="3">${h(i.desc)}</textarea></label><label>Qui ho comunica<input name="who" value="${h(i.who||'')}"></label>`,
+  d=>{if(i.motiu!==d.motiu)addLog(i,`Motiu: ${i.motiu} → ${d.motiu}`);Object.assign(i,{motiu:d.motiu,prio:d.prio,desc:d.desc.trim(),who:d.who.trim()});toast('Incidència desada')});
+}
+function render(){
+  if(!isTic)tab='inc';
+  const unavailable=apiLoading||!DB;
+  $('#modeTag').textContent=isTic?'Mode TIC':'';$('#newInc').style.display=isTic&&!unavailable?'':'none';$('#tabs').style.display=isTic&&!unavailable?'':'none';
+  $('#modeBtn').textContent=isTic?'Opciones TIC':'Acceso TIC';$('#modeBtn').disabled=unavailable;$('#gq').disabled=unavailable;
+  $('#note').innerHTML=apiLoading?'<div class="note">Conectando con MongoDB…</div>':DB?(ready?'':'<div class="note">Cargando datos compartidos…</div>'):`<div class="note">No se pudo conectar con MongoDB/API (${h(apiError)}). Revisa MONGODB_URI y AUTH_SECRET.</div>`;
+  const v=$('#view');
+  if(unavailable){$('#tabs').innerHTML='';v.innerHTML=apiLoading?'<div class="empty">Conectando con la base de datos…</div>':`<div class="empty">La aplicación necesita MongoDB para funcionar. Corrige la configuración del servidor y vuelve a cargar.</div>`;return}
+  $('#tabs').innerHTML=[['inc','Incidències',S.incidents.filter(i=>i.st!=='resolta').length],['inv','Inventari',S.devices.filter(d=>d.rs!=='fet').length],['carts','Carros',S.carts.length]]
+   .map(([k,l,n])=>`<button class="${tab===k?'on':''}" data-t="${k}">${l}<span class="n">${n}</span></button>`).join('');
+  document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;f.cart='';f.type='';render()});
+  const hd=$('#help'),ho=hd.open;hd.innerHTML=helpHtml();hd.open=ho;
+  if(tab==='inc'){v.innerHTML=renderInc();bindInc()}
+  else if(tab==='inv'){v.innerHTML=renderInv();bindInv()}
+  else{v.innerHTML=renderCarts();bindCarts()}
+}
+applyLogo();render();initDb();
+</script>
+</body>
+</html>

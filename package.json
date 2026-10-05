@@ -1,0 +1,9 @@
+{
+  "name": "gestor-tic-sant-salvador",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gestor d'incidències TIC · Escola Sant Salvador (Vercel + MongoDB)",
+  "engines": { "node": ">=18" },
+  "scripts": { "dev": "vercel dev", "create-admin": "node scripts/create-admin.js" },
+  "dependencies": { "mongodb": "^6.8.0" }
+}
