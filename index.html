@@ -601,12 +601,6 @@ function addContainedImage(doc,data,x,y,maxW,maxH){
   const w=props.width*scale,h=props.height*scale;
   doc.addImage(data,props.fileType||'JPEG',x+(maxW-w)/2,y+(maxH-h)/2,w,h);
 }
-function devicePlaceLabel(device){
-  const cart=cartOf(device.cartId);
-  if(cart)return `${cart.name} · ${cart.loc||'ubicació no indicada'}`;
-  if(device.loc)return device.spot?`${device.loc} · ${device.spot}`:device.loc;
-  return device.type||'Dispositiu TIC';
-}
 async function pdfRooms(rooms){
   if(!rooms.length)return;
   if(!window.jspdf){toast('No se pudo cargar el generador PDF');return}
@@ -631,7 +625,7 @@ async function pdfRooms(rooms){
     doc.setFillColor(246,248,251);doc.roundedRect(x+20,y+69,48,48,2,2,'F');
     doc.addImage(qr,'PNG',x+24,y+73,40,40);
     doc.setTextColor(29,95,168);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('ESCANEA PARA REPORTAR',x+W/2,y+124,{align:'center'});
+    doc.text("ESCANEJA PER COMUNICAR UNA INCIDÈNCIA INFORMÀTICA D'AULA",x+W/2,y+124,{align:'center'});
   });
   try{doc.save('etiquetes-aules-sant-salvador.pdf')}catch(e){toast('No se pudo descargar el PDF')}
 }
@@ -639,34 +633,23 @@ async function pdf(codes){
   if(!codes.length)return;
   if(!window.jspdf){toast('No s\u2019ha pogut carregar el generador de PDF');return}
   if(typeof window.qrcode!=='function'){toast('No se pudo cargar el generador QR');return}
-  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=90,H=50,per=10;
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=62,H=28,per=27;
   const ord=['cart','fix','loose'];codes=codes.filter(code=>devOf(code)).slice().sort((p,q)=>{const a=devOf(p),b=devOf(q);return ord.indexOf(modeOf(a))-ord.indexOf(modeOf(b))||(cartOf(a.cartId)?.name||a.loc||'~').localeCompare(cartOf(b.cartId)?.name||b.loc||'~')||(a.num||0)-(b.num||0)||a.code.localeCompare(b.code)});
   if(!codes.length)return;
   const logo=LOGO.startsWith('data:image/')?LOGO:'';
   codes.forEach((code,i)=>{
     if(i&&i%per===0)doc.addPage();
-    const k=i%per,x=10+(k%2)*95,y=10+Math.floor(k/2)*55,d=devOf(code);
+    const k=i%per,x=8+(k%3)*66,y=8+Math.floor(k/3)*31,d=devOf(code);
     const qr=qrPng(`https://ticsantsa.vercel.app/?device=${encodeURIComponent(d.code)}`);
-    doc.setFillColor(255,255,255);doc.setDrawColor(207,218,229);doc.setLineWidth(.55);doc.roundedRect(x,y,W,H,2,2,'FD');
-    doc.setFillColor(29,95,168);doc.roundedRect(x,y,2.5,H,1,1,'F');
-    doc.setFillColor(239,245,250);doc.roundedRect(x+5,y+3,W-10,14,2,2,'F');
-    if(logo)addContainedImage(doc,logo,x+8,y+4,18,10);
-    else{doc.setTextColor(20,72,120);doc.setFont('helvetica','bold');doc.setFontSize(6);doc.text('ESCOLA SANT SALVADOR',x+7,y+11)}
+    doc.setDrawColor(207,218,229);doc.setLineWidth(.4);doc.roundedRect(x,y,W,H,1.5,1.5,'S');
+    if(logo)addContainedImage(doc,logo,x+3,y+3,10,6);
     doc.setTextColor(20,72,120);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('INVENTARI TIC',x+30,y+9);
-    doc.setTextColor(81,101,122);doc.setFontSize(5.5);
-    doc.text('ESCOLA SANT SALVADOR',x+30,y+14);
-    doc.setTextColor(81,101,122);doc.setFontSize(6);doc.text("CODI D'INVENTARI",x+5,y+23);
-    doc.setTextColor(25,45,70);doc.setFontSize(16);
+    doc.text('APLICATIU TIC',x+15,y+8);
+    doc.setTextColor(25,45,70);doc.setFont('helvetica','bold');doc.setFontSize(12);
     const codeWidth=doc.getTextWidth(d.code);
-    doc.setFontSize(Math.min(16,Math.max(8,16*52/codeWidth)));
-    doc.text(d.code,x+5,y+33);
-    doc.setFont('helvetica','normal');doc.setFontSize(6);
-    const place=doc.splitTextToSize(devicePlaceLabel(d),54).slice(0,1);
-    doc.text(place[0],x+5,y+42);
-    doc.addImage(qr,'PNG',x+64,y+16,22,22);
-    doc.setTextColor(29,95,168);doc.setFont('helvetica','bold');doc.setFontSize(5.5);
-    doc.text('ESCANEA',x+75,y+43,{align:'center'});
+    doc.setFontSize(Math.min(12,12*36/codeWidth));
+    doc.text(d.code,x+3,y+22);
+    doc.addImage(qr,'PNG',x+42,y+5,18,18);
   });
   const blob=doc.output('blob'),name='etiquetes-sant-salvador.pdf';
   try{doc.save(name)}catch(e){toast('No se pudo descargar el PDF')}
