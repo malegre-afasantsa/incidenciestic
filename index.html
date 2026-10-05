@@ -235,11 +235,11 @@ async function syncServer(){
         for(const id in snap[k])if(!synced[k][id]&&S[k].some(o=>o[key]===id))synced[k][id]=snap[k][id];
       }
     }
-  }catch(e){syncPending=true;toast(e.message||'No se han podido guardar los cambios.');}
+  }catch(e){syncPending=false;DB=false;ready=true;isTic=false;apiError=e.message||'No se pudieron guardar los cambios en MongoDB';render();toast('Error al guardar en MongoDB. Recarga la página y comprueba la conexión.');}
   finally{syncing=false;}
 }
 function save(){
-  if(!DB||!ready){toast('MongoDB no está disponible; no se guardó el cambio.');return}
+  if(!DB||!ready){toast('La base de dades no está disponible; no se guardó el cambio.');return}
   syncPending=true;syncServer();
 }
 async function initDb(){
@@ -527,14 +527,14 @@ async function manageUsers(){
     const fr=$('#frm');
     fr.innerHTML=`<h2>Usuarios TIC</h2><div>${users.map(u=>`<div class="c"><b>${h(u.username)}</b> · ${h(u.name||u.username)} <span class="meta">${u.role==='admin'?'Administrador':'TIC'}</span></div>`).join('')||'<p class="meta">Todavía no hay usuarios.</p>'}</div><div class="fb"><button type="button" class="btn" id="usersClose">Cerrar</button><button type="button" class="btn p" id="userAdd">Crear usuario</button></div>`;
     $('#usersClose').onclick=()=>$('#dlg').close();
-    $('#userAdd').onclick=()=>form('Crear usuario TIC',`<label>Usuario<input name="username" required minlength="3" maxlength="32" autocapitalize="none" autocomplete="off" placeholder="ej. mgarcia"></label><label>Nombre visible<input name="name" maxlength="60" placeholder="Nombre y apellidos"></label><label>Contraseña<input name="password" type="password" required minlength="8" autocomplete="new-password"></label>`,async d=>{try{await apiRequest('/api/auth',{action:'create',username:d.username,name:d.name,password:d.password,role:'tic'});toast('Usuario TIC creado')}catch(e){return e.message}},'Crear usuario');
+    $('#userAdd').onclick=()=>form('Crear usuario TIC',`<label>Usuario<input name="username" required minlength="3" maxlength="32" autocapitalize="none" autocomplete="off" placeholder="ej. mgarcia"></label><label>Nombre visible<input name="name" maxlength="60" placeholder="Nombre y apellidos"></label><label>Contraseña<input name="password" type="password" required minlength="8" autocomplete="new-password"></label>`,async d=>{try{await apiRequest('/api/auth',{action:'create',username:d.username,name:d.name,password:d.password,role:'tic'});toast('Usuario TIC creado');setTimeout(manageUsers,0)}catch(e){return e.message}},'Crear usuario');
     $('#dlg').showModal();
   }catch(e){toast(e.message||'No se pudieron cargar los usuarios')}
 }
 $('#modeBtn').onclick=()=>{
   if(isTic)return form('Opciones TIC',`<p class="meta" style="margin:0">Sesión: ${h(cfg.user)}. Puedes cambiar la contraseña o volver a la vista docente.</p>${cfg.role==='admin'?'<button type="button" class="btn" id="usersBtn">Gestionar usuarios</button>':''}<label>Contraseña actual<input name="current" type="password" required autocomplete="current-password"></label><label>Nueva contraseña (mínimo 8 caracteres, opcional)<input name="pass" type="password" placeholder="Déjalo vacío para no cambiarla" autocomplete="new-password"></label><label>Logo de la escuela (imagen)<input type="file" id="logoF" accept="image/*"></label>`,
     async d=>{if(d.pass.trim()){try{await apiRequest('/api/auth',{action:'password',current:d.current,password:d.pass})}catch(e){return e.message}}save();toast('Opciones actualizadas')},'Guardar')||($('#frm').querySelector('.fb').insertAdjacentHTML('afterbegin','<button type="button" class="btn" id="out">Salir del modo TIC</button>'),$('#out').onclick=()=>{$('#dlg').close();setTic(false)},$('#logoF').onchange=setLogoFile,$('#usersBtn')&&($('#usersBtn').onclick=manageUsers));
-  form('Acceso TIC',`<p class="meta" style="margin:0">Solo para el personal TIC. El profesorado puede notificar incidencias directamente.</p><p class="meta" style="margin:0">Cuenta inicial: <b>tic</b> / <b>1234</b>. Cambia la contraseña al entrar.</p><label>Usuario<input name="user" required autocomplete="username" autocapitalize="none"></label><label>Contraseña<input name="pass" id="pw" type="password" required autocomplete="current-password"></label><label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" id="showpw" style="padding:0"> Mostrar contraseña</label>`,
+  form('Acceso TIC',`<p class="meta" style="margin:0">Solo para el personal TIC. El profesorado puede notificar incidencias directamente.</p><label>Usuario<input name="user" required autocomplete="username" autocapitalize="none"></label><label>Contraseña<input name="pass" id="pw" type="password" required autocomplete="current-password"></label><label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" id="showpw" style="padding:0"> Mostrar contraseña</label>`,
     async d=>{try{const result=await apiRequest('/api/auth',{action:'login',username:d.user,password:d.pass});cfg.user=result.me.username;cfg.role=result.me.role;setTic(true)}catch(e){return e.message}},'Entrar');
   const sp=$('#showpw');if(sp)sp.onchange=()=>{$('#pw').type=sp.checked?'text':'password'};
 };
