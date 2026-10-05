@@ -148,6 +148,27 @@ dialog::backdrop{background:rgba(20,35,60,.45);backdrop-filter:blur(2px)}
 #qrReader{width:100%;max-width:420px;margin:0 auto;overflow:hidden;border-radius:14px}
 #qrReader video{border-radius:12px;object-fit:cover}
 .scan-status{margin:0;color:var(--mut);font-size:13px}
+.scan-dialog{padding:0;overflow:hidden;background:#f5f8fb}
+.scan-form{gap:0;padding:0;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
+.scan-head{position:relative;overflow:hidden;padding:24px 24px 22px;background:linear-gradient(145deg,#123d5a,#126f78);color:#fff}
+.scan-head::after{content:"";position:absolute;width:150px;height:150px;right:-55px;top:-62px;border:1px solid rgba(255,255,255,.22);border-radius:50%;box-shadow:0 0 0 18px rgba(255,255,255,.04),0 0 0 38px rgba(255,255,255,.035)}
+.scan-eyebrow{position:relative;z-index:1;display:flex;align-items:center;gap:7px;margin:0 0 12px;color:#c7e6e8;font-size:11px;font-weight:800;text-transform:uppercase}
+.scan-head h2{position:relative;z-index:1;margin:0;color:#fff;font-size:24px}
+.scan-head p{position:relative;z-index:1;max-width:340px;margin:7px 0 0;color:#e1eff1;font-size:14px}
+.scan-content{display:grid;gap:14px;padding:18px 20px 20px}
+.scan-frame{position:relative;min-height:190px;padding:10px;border:1px solid #dce5ec;border-radius:15px;background:#fff;box-shadow:0 8px 22px rgba(21,54,77,.08)}
+.scan-frame::before,.scan-frame::after{position:absolute;z-index:2;top:50%;left:50%;width:42px;height:42px;content:"";pointer-events:none;transform:translate(-50%,-50%);border:0 solid #19a5a0}
+.scan-frame::before{border-top-width:3px;border-left-width:3px;border-top-left-radius:8px;translate:-63px -63px}
+.scan-frame::after{border-right-width:3px;border-bottom-width:3px;border-bottom-right-radius:8px;translate:21px 21px}
+#qrReader{width:100%;max-width:100%;min-height:190px;margin:0 auto;overflow:hidden;border-radius:10px;background:radial-gradient(ellipse at center,#f9fcfd,#edf4f7)}
+#qrReader video{display:block;width:100%!important;max-height:46dvh;border-radius:10px;object-fit:cover}
+.scan-status{display:flex;align-items:flex-start;gap:9px;margin:0;color:#41576c;font-size:13px;line-height:1.4}
+.scan-status::before{content:"";flex:none;width:8px;height:8px;margin-top:4px;border-radius:50%;background:#18a17a;box-shadow:0 0 0 4px #e1f4ed}
+.scan-status.error{color:#a33a38}
+.scan-status.error::before{background:#d64545;box-shadow:0 0 0 4px #fbe8e7}
+.scan-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:12px;border-top:1px solid #e1e8ee}
+.scan-foot .scan-hint{margin:0;color:#687b8d;font-size:12px}
+.scan-foot .btn{min-width:92px}
 .sound-toggle{width:42px;min-width:42px;padding:8px 0;font-size:18px}
 .sound-toggle[aria-pressed="false"]{color:var(--mut);opacity:.7}
 @media (max-width:700px){
@@ -158,6 +179,11 @@ dialog::backdrop{background:rgba(20,35,60,.45);backdrop-filter:blur(2px)}
   header .logo{height:44px;width:auto;max-width:76px;object-fit:contain}
   dialog form{padding:18px;max-height:calc(94dvh - 4px)}
   .row{grid-template-columns:1fr}
+  .scan-form{padding:0}
+  .scan-head{padding:20px 19px 18px}
+  .scan-head h2{font-size:22px}
+  .scan-content{padding:14px}
+  .scan-frame,#qrReader{min-height:170px}
 }
 @media print{.scan-btn{display:none!important}}
 </style>
@@ -309,19 +335,21 @@ function consumeDeviceLink(){
 async function closeDeviceScanner(closeDialog=true){
   const scanner=deviceScanner;deviceScanner=null;
   if(scanner){try{await scanner.stop()}catch(e){}try{scanner.clear()}catch(e){}}
+  $('#dlg').classList.remove('scan-dialog');$('#frm').classList.remove('scan-form');
   if(closeDialog&&$('#dlg').open)$('#dlg').close();
 }
 function openDeviceScanner(){
   if(!DB)return toast('El servidor no está disponible.');
   if(typeof window.Html5Qrcode!=='function')return toast('No se pudo cargar el lector QR.');
   const fr=$('#frm');
-  fr.innerHTML=`<h2>Escanear dispositivo</h2><p class="scan-status" id="scanStatus">Apunta la cámara trasera a la etiqueta QR del dispositivo.</p><div id="qrReader"></div><div class="fb"><button type="button" class="btn" id="scanClose">Cerrar</button></div>`;
+  $('#dlg').classList.add('scan-dialog');fr.classList.add('scan-form');
+  fr.innerHTML=`<div class="scan-head"><p class="scan-eyebrow">Escola Sant Salvador · suport TIC</p><h2>Incidència d'aula</h2><p>Escaneja el codi de l'equip per avisar de seguida o consultar-ne l'historial.</p></div><div class="scan-content"><div class="scan-frame"><div id="qrReader"></div></div><p class="scan-status" id="scanStatus" role="status" aria-live="polite">Preparant la càmera del dispositiu…</p><div class="scan-foot"><p class="scan-hint">Fes servir el QR de la targeta de l'equip.</p><button type="button" class="btn" id="scanClose">Tancar</button></div></div>`;
   $('#scanClose').onclick=()=>closeDeviceScanner();$('#dlg').showModal();scanHandled=false;
   deviceScanner=new window.Html5Qrcode('qrReader',{formatsToSupport:[window.Html5QrcodeSupportedFormats.QR_CODE],verbose:false});
   deviceScanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250},aspectRatio:1},async text=>{
-    if(scanHandled)return;scanHandled=true;await closeDeviceScanner();openScannedDevice(text);
+    if(scanHandled)return;scanHandled=true;playUiSound('scan');await closeDeviceScanner();openScannedDevice(text);
   },()=>{}).catch(async error=>{
-    const status=$('#scanStatus');if(status)status.textContent='No se pudo abrir la cámara. Comprueba el permiso de cámara y usa la app mediante HTTPS.';
+    const status=$('#scanStatus');if(status){status.classList.add('error');status.textContent='No se pudo abrir la cámara. Comprueba el permiso de cámara y abre esta app con HTTPS.'}
     await closeDeviceScanner(false);
   });
 }
